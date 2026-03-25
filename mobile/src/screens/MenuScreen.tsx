@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { styles } from './Style/MenuScreen.styles';
 
 export default function MenuScreen() {
   return (
@@ -8,8 +9,3 @@ export default function MenuScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 10 },
-});
