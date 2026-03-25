@@ -10,8 +10,8 @@ import {
   Platform 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons'; // Ensure expo-vector-icons is installed
-import { styles } from '../src/screens/Style/SettingsScreen.styles';
+import { Ionicons } from '@expo/vector-icons';
+import { styles } from '../Styles/SettingsScreen.styles';
 
 export default function SettingsScreen() {
   const [name, setName] = useState('');
@@ -19,7 +19,6 @@ export default function SettingsScreen() {
   const [bio, setBio] = useState('');
 
   const handleSave = () => {
-    // Logic to update profile
     console.log("Profile Updated", { name, email, bio });
   };
 
@@ -31,7 +30,6 @@ export default function SettingsScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           
-          {/* Header Section */}
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Edit Profile</Text>
             <TouchableOpacity onPress={handleSave}>
@@ -39,10 +37,8 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Avatar Section */}
           <View style={styles.avatarContainer}>
             <View style={styles.imageWrapper}>
-              {/* Replace with actual user image URI if available */}
               <View style={styles.placeholderCircle}>
                 <Ionicons name="person" size={60} color="#A0A0A0" />
               </View>
@@ -53,7 +49,6 @@ export default function SettingsScreen() {
             <Text style={styles.changePhotoText}>Change Profile Photo</Text>
           </View>
 
-          {/* Form Section */}
           <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Full Name</Text>

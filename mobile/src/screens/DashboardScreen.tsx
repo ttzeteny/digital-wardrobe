@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { styles } from './Style/DashboardScreen.styles';
+import { styles } from '../Styles/DashboardScreen.styles';
 
 export default function DashboardScreen() {
   return (

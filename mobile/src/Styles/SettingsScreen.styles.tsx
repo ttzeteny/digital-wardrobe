@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#007AFF', // Or your brand primary color
+    color: '#007AFF',
   },
   avatarContainer: {
     alignItems: 'center',
@@ -86,6 +86,6 @@ export const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
-    textAlignVertical: 'top', // Important for Android
+    textAlignVertical: 'top',
   },
 });

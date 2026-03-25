@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './Style/ProfileScreen.styles';
+import { styles } from '../Styles/ProfileScreen.styles';
 import { router } from 'expo-router';
 
 const handleLogout = () => {
@@ -47,7 +47,7 @@ export default function ProfileScreen() {
 
         <Text style={styles.sectionTitle}>Account Settings</Text>
         
-        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/SettingsScreen')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('../Screens/SettingsScreen')}>
           <Text style={styles.menuItemText}>Edit Profile</Text>
           <Text style={{ color: '#C7C7CC' }}>❯</Text>
         </TouchableOpacity>

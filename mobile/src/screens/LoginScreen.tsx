@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { styles } from './Style/LoginScreen.styles';
+import { styles } from '../Styles/LoginScreen.styles';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);

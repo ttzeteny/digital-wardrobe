@@ -1,2 +1,2 @@
-import LoginScreen from '../src/screens/LoginScreen';
+import LoginScreen from '../src/Screens/LoginScreen';
 export default LoginScreen;

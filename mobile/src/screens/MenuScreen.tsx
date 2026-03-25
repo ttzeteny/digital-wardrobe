@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { styles } from './Style/MenuScreen.styles';
+import { styles } from '../Styles/MenuScreen.styles';
 
 export default function MenuScreen() {
   return (
