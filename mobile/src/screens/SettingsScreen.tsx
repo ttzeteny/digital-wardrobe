@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../Styles/SettingsScreen.styles';
+import { router } from 'expo-router';
 
 export default function SettingsScreen() {
   const [name, setName] = useState('');
@@ -19,6 +20,8 @@ export default function SettingsScreen() {
   const [bio, setBio] = useState('');
 
   const handleSave = () => {
+    //TODO: Implement actual save logic here (e.g., API call to update user profile)
+    router.push('/profile');
     console.log("Profile Updated", { name, email, bio });
   };
 

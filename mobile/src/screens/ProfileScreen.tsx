@@ -10,7 +10,7 @@ const handleLogout = () => {
       onPress: () => {
         // TODO: Implement actual logout logic here 
         // (clear auth tokens, reset user state, redirect to login screen)
-        router.push('/login');
+        router.replace('/main');
         console.log('User logged out');
       }
     }
@@ -47,7 +47,7 @@ export default function ProfileScreen() {
 
         <Text style={styles.sectionTitle}>Account Settings</Text>
         
-        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('../Screens/SettingsScreen')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings')}>
           <Text style={styles.menuItemText}>Edit Profile</Text>
           <Text style={{ color: '#C7C7CC' }}>❯</Text>
         </TouchableOpacity>
