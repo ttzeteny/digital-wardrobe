@@ -69,4 +69,26 @@ export const styles = StyleSheet.create({
     fontSize: 17, 
     fontWeight: '600' 
     },
+  // RegisterScreen specific styles
+  Reginput: {
+    backgroundColor: '#F2F2F7',
+    width: '100%',
+    height: 56,
+    borderRadius: 14,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    marginBottom: 12,
+    color: '#000000',
+  },
+  // LoginScreen specific styles
+  Loginput: {
+    backgroundColor: '#F2F2F7',
+    width: '100%',
+    height: 56,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 12,
+    color: '#000000',
+  },
 });
