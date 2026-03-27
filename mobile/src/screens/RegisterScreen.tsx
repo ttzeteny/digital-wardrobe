@@ -20,19 +20,30 @@ export default function RegisterScreen() {
 
     setIsLoading(true);
     try {
-      // TODO: Implement registration logic (Update the endpoint as needed)
       const backendUrl = `${process.env.EXPO_PUBLIC_API_URL}/api/auth/register`;
       
-      setTimeout(() => {
-        setIsLoading(false);
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      setIsLoading(false);
+
+      if (response.ok) {
         Alert.alert("Success", "Account created successfully!", [
-          { text: "OK", onPress: () => router.replace('/(tabs)') }
+          { text: "OK", onPress: () => router.replace('/login') }
         ]);
-      }, 1500);
+      } else {
+        Alert.alert("Registration Failed", data.error || "Unknown error occurred.");
+      }
 
     } catch (error) {
       setIsLoading(false);
-      Alert.alert("Registration Failed", "Unable to connect to the server.");
+      Alert.alert("Connection Error", "Unable to connect to the server.");
     }
   };
 

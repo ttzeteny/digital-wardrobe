@@ -17,13 +17,24 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     try {
-      // TODO: Implement login logic (Update the endpoint as needed)
       const backendUrl = `${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`;
       
-      setTimeout(() => {
-        setIsLoading(false);
+      const response = await fetch(backendUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email, password: password }),
+      });
+
+      const data = await response.json();
+      setIsLoading(false);
+
+      if (response.ok) {
         router.replace('/(tabs)');
-      }, 1000);
+      } else {
+        Alert.alert("Login Failed", data.error || "Invalid credentials.");
+      }
 
     } catch (error) {
       setIsLoading(false);
