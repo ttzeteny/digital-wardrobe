@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -52,7 +52,11 @@ export default function LoginScreen() {
           
           <View style={styles.content}>
             <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoText}>LOGO</Text>
+              <Image
+                          source={require('../Images/logo_var2.png')} 
+                          style={styles.logoImage} 
+                          resizeMode="contain"
+                        />
             </View>
             
             <Text style={styles.title}>Welcome Back</Text>
@@ -60,7 +64,7 @@ export default function LoginScreen() {
 
             <View style={{ width: '100%', marginTop: 30 }}>
               <TextInput
-                style={styles.Loginput}
+                style={styles.loginput}
                 placeholder="Email Address"
                 placeholderTextColor="#8E8E93"
                 keyboardType="email-address"
@@ -69,7 +73,7 @@ export default function LoginScreen() {
                 onChangeText={setEmail}
               />
               <TextInput
-                style={styles.Loginput}
+                style={[styles.loginput]}
                 placeholder="Password"
                 placeholderTextColor="#8E8E93"
                 secureTextEntry
@@ -77,8 +81,8 @@ export default function LoginScreen() {
                 onChangeText={setPassword}
               />
               
-              <TouchableOpacity style={{ alignSelf: 'flex-end', marginTop: 5 }}>
-                <Text style={{ color: '#007AFF', fontWeight: '500' }}>Forgot Password?</Text>
+              <TouchableOpacity style={{ alignSelf: 'flex-end', marginTop: 5, marginBottom: 8}}>
+                <Text style={{ color: '#967662', fontWeight: '500' }}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
           </View>
