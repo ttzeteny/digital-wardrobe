@@ -87,6 +87,14 @@ export default function RegisterScreen() {
                 value={formData.password}
                 onChangeText={(text) => setFormData({...formData, password: text})}
               />
+              <TextInput
+                style={styles.Reginput}
+                placeholder="Confirm Password"
+                placeholderTextColor="#8E8E93"
+                secureTextEntry
+                value={formData.password}
+                onChangeText={(text) => setFormData({...formData, password: text})}
+              />
             </View>
           </View>
 
