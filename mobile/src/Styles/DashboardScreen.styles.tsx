@@ -1,9 +1,10 @@
+import { act } from "react";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: '#f8f4f0', 
   },
   header: {
     flexDirection: 'row',
@@ -118,7 +119,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row', 
     paddingHorizontal: 18, 
     paddingVertical: 10, 
-    borderRadius: 25, 
+    borderRadius: 12, 
     backgroundColor: '#F2F2F7', 
     marginRight: 10, 
     alignItems: 'center', 
@@ -144,20 +145,40 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     paddingHorizontal: 20, 
   },
-  actionCard: { 
-    width: '48%', 
+  actionCard: {
+    height: 120,
+    width: '50%', 
     padding: 15, 
-    borderRadius: 20, 
+    borderRadius: 25,
+    marginRight: 15, 
+  },
+  actionContent: { 
+    flexDirection: 'row', 
+    alignItems: 'center',
+  },
+  actionIconContainer: { 
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40, 
+    height: 40,
+    borderRadius: 12,
+    backgroundColor:'#E4D3C6',
+  },
+  actionTextContainer: { 
+    marginLeft: 10,
+  },
+  actionSubTextContainer: { 
+    marginTop: 10, 
+    paddingHorizontal: 5, 
   },
   actionTitle: { 
     fontWeight: '700', 
-    marginTop: 10, 
     fontSize: 14, 
     color: '#2C3E50', 
   },
-  actionSub: { 
+  actionSub: {
     fontSize: 11, 
-    color: '#8E8E93', 
+    color: '#2C3E50', 
     marginTop: 4, 
   },
   activityCard: { 

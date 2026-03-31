@@ -11,8 +11,10 @@ interface CategoryItemProps {
 }
 
 interface ActionCardProps {
-  title: string;
-  subtitle: string;
+  line1: string;
+  line2: string;
+  sub1: string;
+  sub2: string;
   color: string;
   icon: string;
 }
@@ -57,7 +59,6 @@ export default function DigitalWardrobeDashboard() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Manage</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
           <CategoryItem icon="camera" label="DIGITIZE" active />
@@ -68,17 +69,22 @@ export default function DigitalWardrobeDashboard() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
         <View style={styles.quickActionsRow}>
           <ActionCard 
-            title="Wardrobe Inventory" 
-            subtitle="124 Clothes | 45 Acc." 
-            color="#FDF5E6" 
+            line1="Wardrobe" 
+            line2="Inventory" 
+            sub1="MY ITEMS:" 
+            sub2="124 Clothes | 45 Acc." 
+            color="#D2B496" 
             icon="hanger"
           />
           <ActionCard 
-            title="Daily Suggestion" 
-            subtitle="23°C Sunny | 1 Found" 
+            line1="Daily" 
+            line2="Suggestion" 
+            sub1="TODAY'S LOOK:" 
+            sub2="23°C Sunny | 1 Found" 
             color="#E0F7FA" 
             icon="cloud.sun"
           />
@@ -102,7 +108,6 @@ export default function DigitalWardrobeDashboard() {
             <Text style={styles.editButtonText}>Edit</Text>
           </TouchableOpacity>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -116,10 +121,20 @@ const CategoryItem = ({ icon, label, active }: CategoryItemProps) => (
   </TouchableOpacity>
 );
 
-const ActionCard = ({ title, subtitle, color, icon }: ActionCardProps) => (
+const ActionCard = ({ line1, line2, sub1, sub2, color, icon }: ActionCardProps) => (
   <TouchableOpacity style={[styles.actionCard, { backgroundColor: color }]}>
-    <IconSymbol name={icon as any} size={24} color="#2C3E50" />
-    <Text style={styles.actionTitle}>{title}</Text>
-    <Text style={styles.actionSub}>{subtitle}</Text>
+    <View style={styles.actionContent}>
+      <View style={styles.actionIconContainer}>
+        <IconSymbol name={icon as any} size={24} color="#2C3E50" />
+      </View>
+      <View style={styles.actionTextContainer}>
+        <Text style={styles.actionTitle}>{line1}</Text>
+        <Text style={styles.actionTitle}>{line2}</Text>
+      </View>
+    </View>
+    <View style={styles.actionSubTextContainer}>
+      <Text style={styles.actionSub}>{sub1}</Text>     
+      <Text style={styles.actionSub}>{sub2}</Text>
+    </View>
   </TouchableOpacity>
 );
