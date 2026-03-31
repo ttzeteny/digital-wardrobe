@@ -1,9 +1,11 @@
 package com.wardrobe.backend.service;
 
+import com.wardrobe.backend.dto.AuthResponse;
 import com.wardrobe.backend.dto.LoginRequest;
 import com.wardrobe.backend.dto.RegisterRequest;
 import com.wardrobe.backend.model.User;
 import com.wardrobe.backend.repository.UserRepository;
+import com.wardrobe.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public String register(RegisterRequest request) {
 
@@ -22,7 +25,7 @@ public class AuthService {
         }
 
         User user = new User();
-        user.setFullName(request.getUserName());
+        user.setUserName(request.getUserName());
         user.setEmail(request.getEmail());
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -32,8 +35,7 @@ public class AuthService {
         return "Registered successfully";
     }
 
-    public String login(LoginRequest request) {
-
+    public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Wrong email or password!"));
 
@@ -41,6 +43,8 @@ public class AuthService {
             throw new RuntimeException("Wrong email or password!");
         }
 
-        return "Logged in successfully";
+        String token = jwtService.generateToken(user.getEmail(), user.getId());
+
+        return new AuthResponse(token, user.getId(), user.getFullName());
     }
 }
