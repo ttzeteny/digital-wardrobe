@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
+import { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { styles } from '../Styles/DashboardScreen.styles';
@@ -17,6 +18,14 @@ interface ActionCardProps {
   sub2: string;
   color: string;
   icon: string;
+  iconBackground: string;
+}
+
+interface ActivityCardProps {
+  image: any;
+  itemName: string;
+  tags: string[];
+  dateAdded: string;
 }
 
 export default function DigitalWardrobeDashboard() {
@@ -26,7 +35,12 @@ export default function DigitalWardrobeDashboard() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <View style={styles.avatarPlaceholder}/>
+          <ImageBackground
+            source={require('../Images/avatar.png')}
+            style={styles.avatarPlaceholder}
+            imageStyle={{ borderRadius: 22.5 }}
+            resizeMode="cover"
+          />
           <View>
             <Text style={styles.greetingText}>Welcome, back!</Text>
             <Text style={styles.userName}>Username</Text>
@@ -71,49 +85,62 @@ export default function DigitalWardrobeDashboard() {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
-        <View style={styles.quickActionsRow}>
-          <ActionCard 
-            line1="Wardrobe" 
-            line2="Inventory" 
-            sub1="MY ITEMS:" 
-            sub2="124 Clothes | 45 Acc." 
-            color="#D2B496" 
-            icon="hanger"
-          />
-          <ActionCard 
-            line1="Daily" 
-            line2="Suggestion" 
-            sub1="TODAY'S LOOK:" 
-            sub2="23°C Sunny | 1 Found" 
-            color="#E0F7FA" 
-            icon="cloud.sun"
-          />
-        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.quickActionsRow}>
+            <QuickActionCard 
+              line1="Wardrobe" 
+              line2="Inventory" 
+              sub1="MY ITEMS:" 
+              sub2="124 Clothes | 45 Acc." 
+              color="#D2B496" 
+              icon="hanger"
+              iconBackground="#E4D3C6"
+            />
+            <QuickActionCard 
+              line1="Daily" 
+              line2="Suggestion" 
+              sub1="TODAY'S LOOK:" 
+              sub2="23°C Sunny | 1 Found" 
+              color="#E0F7FA" 
+              icon="cloud.sun"
+              iconBackground="#cce3f3"
+            />
+          </View>
+        </ScrollView>
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Closet Activity</Text>
           <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
-        <View style={styles.activityCard}>
-          <View style={styles.activityImage} />
-          <View style={styles.activityInfo}>
-            <Text style={styles.activityTag}>Recently Added</Text>
-            <Text style={styles.activityItemName}>Linen Shirt</Text>
-            <View style={styles.tagRow}>
-              <View style={styles.miniTag}><Text style={styles.miniTagText}>Summer</Text></View>
-              <View style={styles.miniTag}><Text style={styles.miniTagText}>Green</Text></View>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
-        </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ActivityCard 
+            image={<ImageBackground
+              source={require('../Images/blue_jeans.png')}
+              style={styles.activityImageBackground}
+              imageStyle={styles.activityImageTexture}
+              resizeMode="cover"
+            />} 
+            itemName="Blue Denim Jeans"
+            tags={["Jeans", "Denim", "Blue", "Bottoms", "Casual"]}
+            dateAdded="2 days ago"
+          />
+          <ActivityCard 
+            image={<ImageBackground
+              source={require('../Images/red_sweater.png')}
+              style={styles.activityImageBackground}
+              imageStyle={styles.activityImageTexture}
+              resizeMode="cover"
+            />} 
+            itemName="Red Sweater"
+            tags={["Sweater", "Red", "Casual"]}
+            dateAdded="1 week ago"
+          />
+        </ScrollView>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// Sub-components for cleaner code
 const CategoryItem = ({ icon, label, active }: CategoryItemProps) => (
   <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]}>
     <IconSymbol name={icon as any} size={18} color={active ? '#FFF' : '#2C3E50'} />
@@ -121,10 +148,10 @@ const CategoryItem = ({ icon, label, active }: CategoryItemProps) => (
   </TouchableOpacity>
 );
 
-const ActionCard = ({ line1, line2, sub1, sub2, color, icon }: ActionCardProps) => (
+const QuickActionCard = ({ line1, line2, sub1, sub2, color, icon , iconBackground}: ActionCardProps) => (
   <TouchableOpacity style={[styles.actionCard, { backgroundColor: color }]}>
     <View style={styles.actionContent}>
-      <View style={styles.actionIconContainer}>
+      <View style={[styles.actionIconContainer, { backgroundColor: iconBackground }]}>
         <IconSymbol name={icon as any} size={24} color="#2C3E50" />
       </View>
       <View style={styles.actionTextContainer}>
@@ -138,3 +165,56 @@ const ActionCard = ({ line1, line2, sub1, sub2, color, icon }: ActionCardProps) 
     </View>
   </TouchableOpacity>
 );
+
+const ActivityCard = ({image, itemName, tags, dateAdded}: ActivityCardProps) => (
+  <View style={styles.activityCard}>
+    <View style={styles.activityImage}>{image}</View>
+      <View style={styles.activityInfo}>
+        <Text style={styles.activityTag}>Recently added</Text>
+        <Text style={styles.activityDate}>{dateAdded}</Text>
+        <Text style={styles.activityItemName}>{itemName}</Text>
+        <View style={styles.tagRow}>
+          <View style={styles.miniTag}>
+            <Text style={styles.miniTagText}>{tags[0]}</Text>
+          </View>
+          <View style={styles.miniTag}>
+            <Text style={styles.miniTagText}>{tags[1]}</Text>
+          </View>
+          <View style={styles.miniTag}>
+            <Text style={styles.miniTagText}>{tags.length - 2} more</Text>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.editButton}>
+        <Text style={styles.editButtonText}>Edit details</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+);
+
+const TagList = ({ tags }: { tags: string[] }) => {
+
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const intialTags = tags.slice(0, 2);
+    const remainingTags = tags.slice(2);
+    
+    return (
+      <View style={styles.tagRow}>
+        {intialTags.map((tag, index) => (
+          <View style={styles.miniTag} key={index}>
+            <Text style={styles.miniTagText}>{tag}</Text>
+          </View>
+        ))}
+        {isExpanded && remainingTags.map((tag, index) => (
+          <View style={styles.miniTag} key={index + 2}>
+            <Text style={styles.miniTagText}>{tag}</Text>
+          </View>
+        ))}
+        {!isExpanded && (
+          <TouchableOpacity style={styles.miniTag} onPress={() => setIsExpanded(true)}>
+            <Text style={styles.miniTagText}>{remainingTags.length} more</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+  );
+};

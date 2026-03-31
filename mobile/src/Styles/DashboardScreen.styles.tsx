@@ -1,10 +1,9 @@
-import { act } from "react";
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#f8f4f0', 
+    backgroundColor: '#f8f4f0',
   },
   header: {
     flexDirection: 'row',
@@ -162,7 +161,6 @@ export const styles = StyleSheet.create({
     width: 40, 
     height: 40,
     borderRadius: 12,
-    backgroundColor:'#E4D3C6',
   },
   actionTextContainer: { 
     marginLeft: 10,
@@ -182,7 +180,9 @@ export const styles = StyleSheet.create({
     marginTop: 4, 
   },
   activityCard: { 
-    marginHorizontal: 20, 
+    width: 300,
+    height: 150,
+    marginLeft: 20, 
     padding: 15, 
     backgroundColor: '#FFF', 
     borderRadius: 20, 
@@ -194,14 +194,23 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.05, 
   },
   activityImage: { 
-    width: 70, 
-    height: 80, 
+    width: 90, 
+    height: 120, 
     borderRadius: 12, 
     backgroundColor: '#F8F9FA', 
   },
+  activityImageBackground: { 
+    width: '100%', 
+    height: '100%',
+  },
+  activityImageTexture: { 
+    borderRadius: 12, 
+    opacity: 0.9, 
+  },
   activityInfo: { 
     flex: 1, 
-    marginLeft: 15, 
+    marginLeft: 15,
+    height: '90%',
   },
   activityTag: { 
     fontSize: 10, 
@@ -209,13 +218,20 @@ export const styles = StyleSheet.create({
     fontWeight: '700', 
     marginBottom: 2, 
   },
+  activityDate: { 
+    fontSize: 10, 
+    color: '#8E8E93', 
+    marginBottom: 5, 
+  },
   activityItemName: { 
     fontSize: 16, 
     fontWeight: '700', 
     color: '#2C3E50', 
   },
   tagRow: { 
-    flexDirection: 'row', 
+    flexDirection: 'row',
+    width: '38%',
+    height: '20%',
     marginTop: 5, 
   },
   miniTag: { 
@@ -230,10 +246,15 @@ export const styles = StyleSheet.create({
     color: '#1E5631',
   },
   editButton: { 
+    width: 120,
+    marginTop: 10,
     paddingHorizontal: 15, 
-    paddingVertical: 8, 
-    borderRadius: 10, 
-    backgroundColor: '#F2F2F7', 
+    paddingVertical: 8,
+    alignItems: 'center', 
+    borderRadius: 14,
+    borderColor: '#E5E5EA',
+    borderWidth: 1, 
+    backgroundColor: '#ffffff', 
   },
   editButtonText: { 
     fontSize: 12, 

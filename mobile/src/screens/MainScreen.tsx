@@ -23,6 +23,9 @@ export default function MainScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/(tabs)')} disabled={isLoading}>
+          {isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryButtonText}>Developer Log In</Text>}
+        </TouchableOpacity>
         <TouchableOpacity style={styles.primaryButton} onPress={() => router.replace('/login')} disabled={isLoading}>
           {isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryButtonText}>Log In</Text>}
         </TouchableOpacity>
