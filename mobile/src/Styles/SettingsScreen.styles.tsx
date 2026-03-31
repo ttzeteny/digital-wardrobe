@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#007AFF',
+    color: '#967662',
   },
   avatarContainer: {
     alignItems: 'center',

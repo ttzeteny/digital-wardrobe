@@ -3,21 +3,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../Styles/ProfileScreen.styles';
 import { router } from 'expo-router';
 
-const handleLogout = () => {
-  Alert.alert("Log Out", "Are you sure you want to log out?", [
-    { text: "Cancel", style: "cancel" },
-    { text: "Log Out", style: "destructive", 
-      onPress: () => {
-        // TODO: Implement actual logout logic here 
-        // (clear auth tokens, reset user state, redirect to login screen)
-        router.replace('/main');
-        console.log('User logged out');
-      }
-    }
-  ]);
-};
-
 export default function ProfileScreen() {
+
+  const fetchUserData = async () => {
+    //TODO: Fetch user data from API and update state
+  }
+
+  const handleLogout = () => {
+    Alert.alert("Log Out", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Log Out", style: "destructive", onPress: async () => {
+        // TODO: Clear auth tokens or session data here
+          router.replace('/login');
+        }
+      }
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -26,7 +28,7 @@ export default function ProfileScreen() {
           <View style={styles.avatar}>
             <Text style={{ fontSize: 40 }}>👤</Text> 
           </View>
-          <Text style={styles.userName}>Name</Text>
+          <Text style={styles.userName}>Username</Text>
           <Text style={styles.userEmail}>example@example.com</Text>
         </View>
 
