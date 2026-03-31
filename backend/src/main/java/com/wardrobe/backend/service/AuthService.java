@@ -18,23 +18,21 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public String register(RegisterRequest request) {
-
-        System.out.println("BEÉRKEZŐ EMAIL A MOBILRÓL: " + request.getEmail());
-
+    public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new RuntimeException("Ez az email cím már foglalt!");
         }
 
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(user);
 
-        return "Registered successfully";
+        String token = jwtService.generateToken(user.getEmail(), user.getId());
+
+        return new AuthResponse(token, user.getId(), user.getUsername());
     }
 
     public AuthResponse login(LoginRequest request) {

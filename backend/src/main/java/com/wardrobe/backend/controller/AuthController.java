@@ -23,8 +23,8 @@ public class AuthController {
     public ResponseEntity<?> register (@RequestBody RegisterRequest request) {
 
         try {
-            String result = authService.register(request);
-            return ResponseEntity.ok(Map.of("message", result));
+            AuthResponse response = authService.register(request);
+            return ResponseEntity.ok(Map.of("message", response));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

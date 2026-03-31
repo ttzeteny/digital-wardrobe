@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { styles } from '../Styles/MainScreen.styles';
+import { saveAuthData } from '../Utils/secureStore';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +17,7 @@ export default function LoginScreen() {
     }
 
     setIsLoading(true);
+    
     try {
       const backendUrl = `${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`;
       
@@ -31,6 +33,9 @@ export default function LoginScreen() {
       setIsLoading(false);
 
       if (response.ok) {
+
+        await saveAuthData(data.token, data.username);
+        
         router.replace('/(tabs)');
       } else {
         Alert.alert("Login Failed", data.error || "Invalid credentials.");
