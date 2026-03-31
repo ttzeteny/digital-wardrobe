@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { styles } from '../Styles/MainScreen.styles';
+import { saveAuthData } from '../Utils/secureStore';
 
 export default function RegisterScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +58,8 @@ export default function RegisterScreen() {
       setIsLoading(false);
 
       if (response.ok) {
+        await saveAuthData(data.token, data.username);
+
         Alert.alert("Success", "Account created successfully!", [
           { text: "OK", onPress: () => router.replace('/(tabs)') }
         ]);
