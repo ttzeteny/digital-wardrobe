@@ -20,12 +20,14 @@ public class AuthService {
 
     public String register(RegisterRequest request) {
 
+        System.out.println("BEÉRKEZŐ EMAIL A MOBILRÓL: " + request.getEmail());
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
         User user = new User();
-        user.setUserName(request.getUserName());
+        user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -45,6 +47,6 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail(), user.getId());
 
-        return new AuthResponse(token, user.getId(), user.getFullName());
+        return new AuthResponse(token, user.getId(), user.getUsername());
     }
 }
