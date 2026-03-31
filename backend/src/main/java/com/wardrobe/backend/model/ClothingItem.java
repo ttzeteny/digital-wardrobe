@@ -2,16 +2,17 @@ package com.wardrobe.backend.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "clothing_items")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class ClothingItem {
 
     @Id
@@ -23,8 +24,6 @@ public class ClothingItem {
 
     private String category;
 
-    private String season;
-
     private String color;
 
     private String brand;
@@ -34,6 +33,10 @@ public class ClothingItem {
     private Double price;
 
     private Integer wearCount = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

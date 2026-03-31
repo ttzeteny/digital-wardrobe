@@ -17,6 +17,9 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
+    private String userName;
+
+    @Column(nullable = false)
     private String fullName;
 
     @Column(nullable = false, unique = true)
@@ -24,4 +27,7 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ClothingItem> clothingItems;
 }
