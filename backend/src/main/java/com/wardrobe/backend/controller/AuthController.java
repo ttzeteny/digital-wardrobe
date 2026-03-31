@@ -1,5 +1,6 @@
 package com.wardrobe.backend.controller;
 
+import com.wardrobe.backend.dto.AuthResponse;
 import com.wardrobe.backend.dto.LoginRequest;
 import com.wardrobe.backend.dto.RegisterRequest;
 import com.wardrobe.backend.service.AuthService;
@@ -30,13 +31,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login (@RequestBody LoginRequest request) {
-
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            String result = authService.login(request);
-            return ResponseEntity.ok(Map.of("message", result));
+            AuthResponse response = authService.login(request);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
     }
 }
