@@ -24,9 +24,9 @@ public class AuthController {
 
         try {
             AuthResponse response = authService.register(request);
-            return ResponseEntity.ok(Map.of("message", response));
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
