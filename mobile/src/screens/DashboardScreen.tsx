@@ -1,9 +1,10 @@
 import React from 'react';
-import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { styles } from '../Styles/DashboardScreen.styles';
+import { useEffect, useState } from 'react';
+import { clearAuthData, getAuthData } from '../Utils/secureStore';
 
 interface CategoryItemProps {
   icon: string;
@@ -29,7 +30,22 @@ interface ActivityCardProps {
 }
 
 export default function DigitalWardrobeDashboard() {
+
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
+  const [user, setUser] = useState({ username: 'Loading...', email: '' });
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const data = await getAuthData();
+      if (data) {
+        setUser({
+          username: data.username,
+          email: 'example@example.com',
+        });
+      }
+    };
+    loadUserData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -42,8 +58,8 @@ export default function DigitalWardrobeDashboard() {
             resizeMode="cover"
           />
           <View>
-            <Text style={styles.greetingText}>Welcome, back!</Text>
-            <Text style={styles.userName}>Username</Text>
+            <Text style={styles.greetingText}>Welcome back,</Text>
+            <Text style={styles.userName}>{user.username}</Text>
           </View>
         </View>
         <View style={styles.headerIcons}>
