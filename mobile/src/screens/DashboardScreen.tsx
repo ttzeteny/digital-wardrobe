@@ -5,6 +5,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { styles } from '../Styles/DashboardScreen.styles';
 import { useEffect, useState } from 'react';
 import { clearAuthData, getAuthData } from '../Utils/secureStore';
+import { push, replace } from 'expo-router/build/global-state/routing';
 
 interface CategoryItemProps {
   icon: string;
@@ -39,7 +40,7 @@ export default function DigitalWardrobeDashboard() {
       const data = await getAuthData();
       if (data) {
         setUser({
-          username: data.username,
+          username: data.username ?? 'Unknown',
           email: 'example@example.com',
         });
       }
@@ -51,12 +52,14 @@ export default function DigitalWardrobeDashboard() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <ImageBackground
-            source={require('../Images/avatar.png')}
-            style={styles.avatarPlaceholder}
-            imageStyle={{ borderRadius: 22.5 }}
-            resizeMode="cover"
+          <View onTouchEnd={() => push('/profile')}>
+            <ImageBackground
+              source={require('../Images/avatar.png')}
+              style={styles.avatarPlaceholder}
+              imageStyle={{ borderRadius: 22.5 }}
+              resizeMode="cover"
           />
+          </View>
           <View>
             <Text style={styles.greetingText}>Welcome back,</Text>
             <Text style={styles.userName}>{user.username}</Text>
@@ -80,8 +83,10 @@ export default function DigitalWardrobeDashboard() {
             <Text style={styles.bannerTitle}>WARDROBE DIGITIZER</Text>
             <Text style={styles.bannerSub}>Unlock your closet's potential.</Text>
             <Text style={styles.bannerSub}>Start scanning now.</Text>
-            <TouchableOpacity style={styles.bannerButton}>
-              <Text style={styles.bannerButtonText}>Scan & Organize</Text>
+            <TouchableOpacity style={styles.bannerButton} onPress={() => push('/scan')}>
+              <Text style={styles.bannerButtonText}>
+                Scan & Organize
+              </Text>
             </TouchableOpacity>
           </View>
           </ImageBackground>

@@ -39,7 +39,13 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow the app to access your camera to scan clothing."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
