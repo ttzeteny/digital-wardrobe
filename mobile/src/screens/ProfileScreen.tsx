@@ -4,23 +4,28 @@ import { styles } from '../Styles/ProfileScreen.styles';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { clearAuthData, getAuthData } from '../Utils/secureStore';
+import { AntDesign } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState({ username: 'Loading...', email: '' });
 
+  /* Username - Email fetch function */
   useEffect(() => {
     const loadUserData = async () => {
       const data = await getAuthData();
       if (data) {
         setUser({
-          username: data.username,
-          email: 'example@example.com',
+          username: data.username ?? 'Unknown',
+          email: 'example@example.com', // TODO: Display email correctly
         });
       }
     };
     loadUserData();
   }, []);
 
+  /* Logout function */
   const handleLogout = () => {
     Alert.alert("Log Out", "Are you sure you want to log out?", [
       { text: "Cancel", style: "cancel" },
@@ -36,47 +41,91 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        
+        {/* Header */}
         <View style={styles.header}>
           <View style={styles.avatar}>
-            <Text style={{ fontSize: 40 }}>👤</Text> 
+            <Ionicons name="person" size={60} color="#A0A0A0" />
           </View>
-          <Text style={styles.userName}>{user.username}</Text>
+          <View style={styles.headerData}>
+            <Text style={styles.userName}>{user.username}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
+            <TouchableOpacity style={styles.editButton} onPress={() => router.replace('/settings')}>
+              <AntDesign name="edit" size={20} color="white" />
+              <Text style={styles.editButtonText}>Edit Profile</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
+        {/* Stats */}
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>0</Text>
             <Text style={styles.statLabel}>Items</Text>
-          </View>
-          <View style={styles.statItem}>
             <Text style={styles.statValue}>0</Text>
-            <Text style={styles.statLabel}>Outfits</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>$0</Text>
+            <Text style={styles.statLabel}>Outfits</Text>
+            <Text style={styles.statValue}>0</Text>
+          </View>
+          <View style={styles.statItem}>
             <Text style={styles.statLabel}>Value</Text>
+            <Text style={styles.statValue}>$0</Text>
           </View>
         </View>
+        {/* Preferences */}
+        <Text style={styles.sectionTitle}>Preferences</Text>
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLabel}>
+              <MaterialIcons name="notifications" size={24} color="#2C3E50" />
+              <Text style={styles.menuItemText}>Notifications</Text>
+            </View>
+            <Text style={{ color: '#C7C7CC' }}>❯</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.sectionTitle}>Account Settings</Text>
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLabel}>
+              <Ionicons name="language" size={24} color="#2C3E50" />
+              <Text style={styles.menuItemText}>Language</Text>
+            </View>
+            <Text style={{ color: '#C7C7CC' }}>{"English (US)"} ❯</Text>
+          </TouchableOpacity>
+
+        {/* Privacy & Security */}
+        <Text style={styles.sectionTitle}>Privacy & Security</Text>
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLabel}>
+              <MaterialIcons name="lock-outline" size={24} color="#2C3E50" />
+              <Text style={styles.menuItemText}>Change Password</Text>
+            </View>
+            <Text style={{ color: '#C7C7CC' }}>❯</Text>
+          </TouchableOpacity>
+
+        {/* Other */}
+        <Text style={styles.sectionTitle}>Other</Text>
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLabel}>
+              <MaterialIcons name="report-problem" size={24} color="#2C3E50" />
+              <Text style={styles.menuItemText}>Report</Text>
+            </View>
+            <Text style={{ color: '#C7C7CC' }}>❯</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.menuItem}>
+            <View style={styles.menuItemLabel}>
+              <MaterialIcons name="help-outline" size={24} color="#2C3E50" />
+              <Text style={styles.menuItemText}>Help</Text>
+            </View>
+            <Text style={{ color: '#C7C7CC' }}>❯</Text>
+          </TouchableOpacity>
+
+          {/* Log Out */}
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+            <View style={styles.menuItemLabel}>
+              <MaterialIcons name="logout" size={24} color="#FF3B30" />
+              <Text style={[styles.menuItemText, { color: '#FF3B30' }]} >Log Out</Text>
+            </View>
+          </TouchableOpacity>
         
-        <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/settings')}>
-          <Text style={styles.menuItemText}>Edit Profile</Text>
-          <Text style={{ color: '#C7C7CC' }}>❯</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Wardrobe Preferences</Text>
-          <Text style={{ color: '#C7C7CC' }}>❯</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-          <Text style={[styles.menuItemText, { color: '#FF3B30' }]} >Log Out</Text>
-        </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   );

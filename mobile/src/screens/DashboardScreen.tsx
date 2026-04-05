@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { styles } from '../Styles/DashboardScreen.styles';
 import { useEffect, useState } from 'react';
-import { clearAuthData, getAuthData } from '../Utils/secureStore';
-import { push, replace } from 'expo-router/build/global-state/routing';
+import { getAuthData } from '../Utils/secureStore';
+import { push } from 'expo-router/build/global-state/routing';
+
+/* Interfaces */
 
 interface CategoryItemProps {
   icon: string;
@@ -32,7 +34,6 @@ interface ActivityCardProps {
 
 export default function DigitalWardrobeDashboard() {
 
-  const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
   const [user, setUser] = useState({ username: 'Loading...', email: '' });
 
   useEffect(() => {
@@ -49,7 +50,10 @@ export default function DigitalWardrobeDashboard() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <>
+    <StatusBar barStyle="dark-content"/>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <View onTouchEnd={() => push('/profile')}>
@@ -70,28 +74,28 @@ export default function DigitalWardrobeDashboard() {
           <TouchableOpacity style={styles.iconCircle}><IconSymbol name="calendar" size={20} color="#000000" /></TouchableOpacity>
         </View>
       </View>
-
+      
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
+        {/* Featured */}
         <View style={styles.featuredBanner}>
           <ImageBackground 
             source={require('../Images/FeaturedBannerImage.png')}
             style={styles.bannerImageBackground}
             imageStyle={styles.bannerImageTexture}
-            resizeMode="cover"
-          >
-          <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>WARDROBE DIGITIZER</Text>
-            <Text style={styles.bannerSub}>Unlock your closet's potential.</Text>
-            <Text style={styles.bannerSub}>Start scanning now.</Text>
-            <TouchableOpacity style={styles.bannerButton} onPress={() => push('/scan')}>
-              <Text style={styles.bannerButtonText}>
-                Scan & Organize
-              </Text>
-            </TouchableOpacity>
-          </View>
+            resizeMode="cover">
+            <View style={styles.bannerTextContainer}>
+              <Text style={styles.bannerTitle}>WARDROBE DIGITIZER</Text>
+              <Text style={styles.bannerSub}>Unlock your closet's potential.</Text>
+              <Text style={styles.bannerSub}>Start scanning now.</Text>
+              <TouchableOpacity style={styles.bannerButton} onPress={() => push('/scan')}>
+                <Text style={styles.bannerButtonText}>
+                  Scan & Organize
+                </Text>
+              </TouchableOpacity>
+            </View>
           </ImageBackground>
         </View>
-
+        {/* Section */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Manage</Text>
         </View>
@@ -101,7 +105,7 @@ export default function DigitalWardrobeDashboard() {
           <CategoryItem icon="calendar" label="PLAN" />
           <CategoryItem icon="sparkles" label="STYLIST" />
         </ScrollView>
-
+        {/* Quick Actions */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
@@ -128,7 +132,7 @@ export default function DigitalWardrobeDashboard() {
             />
           </View>
         </ScrollView>
-
+        {/* Closet Activity */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Closet Activity</Text>
           <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
@@ -159,6 +163,7 @@ export default function DigitalWardrobeDashboard() {
         </ScrollView>
       </ScrollView>
     </SafeAreaView>
+    </>
   );
 }
 
@@ -211,31 +216,3 @@ const ActivityCard = ({image, itemName, tags, dateAdded}: ActivityCardProps) => 
       </View>
     </View>
 );
-
-const TagList = ({ tags }: { tags: string[] }) => {
-
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    const intialTags = tags.slice(0, 2);
-    const remainingTags = tags.slice(2);
-    
-    return (
-      <View style={styles.tagRow}>
-        {intialTags.map((tag, index) => (
-          <View style={styles.miniTag} key={index}>
-            <Text style={styles.miniTagText}>{tag}</Text>
-          </View>
-        ))}
-        {isExpanded && remainingTags.map((tag, index) => (
-          <View style={styles.miniTag} key={index + 2}>
-            <Text style={styles.miniTagText}>{tag}</Text>
-          </View>
-        ))}
-        {!isExpanded && (
-          <TouchableOpacity style={styles.miniTag} onPress={() => setIsExpanded(true)}>
-            <Text style={styles.miniTagText}>{remainingTags.length} more</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-  );
-};
