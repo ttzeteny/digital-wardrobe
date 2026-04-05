@@ -1,16 +1,34 @@
 import { StyleSheet } from "react-native";
 
+const THEME_COLORS = {
+  main: '#967662',
+  secondary: '#D2B496',
+  tertiary: '#E4D3C6',
+  // Background colors
+  back: '#f8f4f0',
+  softGray: '#F8F9FA',
+  // Border colors
+  borderColor: '#E5E5EA',
+  invisibleBorderColor: '#F2F2F7',
+  // Text colors
+  charcoalText: '#2C3E50',
+  grayText: '#8E8E93',
+};
+
 export const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#f8f4f0',
+    backgroundColor: THEME_COLORS.back,
   },
+  /* Header */
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 15,
     alignItems: 'center',
+    borderBottomWidth: 2,
+    borderBlockColor: THEME_COLORS.borderColor,
   },
   userInfo: { 
     flexDirection: 'row', 
@@ -20,17 +38,16 @@ export const styles = StyleSheet.create({
     width: 45, 
     height: 45, 
     borderRadius: 22.5, 
-    backgroundColor: '#E5E5EA', 
     marginRight: 12,
   },
   greetingText: { 
     fontSize: 14, 
-    color: '#8E8E93', 
+    color: THEME_COLORS.grayText, 
   },
   userName: { 
     fontSize: 18, 
     fontWeight: '700', 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
   },
   headerIcons: { 
     flexDirection: 'row', 
@@ -39,15 +56,17 @@ export const styles = StyleSheet.create({
     width: 40, 
     height: 40, 
     borderRadius: 20, 
-    backgroundColor: '#E4D3C6', 
+    backgroundColor: THEME_COLORS.tertiary, 
     justifyContent: 'center', 
     alignItems: 'center', 
     marginLeft: 10, 
   },
-  
+  /* Page */
   scrollPadding: { 
+    backgroundColor: THEME_COLORS.back,
     paddingBottom: 100, 
   },
+  /* Featured */
   featuredBanner: {
     margin: 20,
     marginBottom: 10,
@@ -82,7 +101,7 @@ export const styles = StyleSheet.create({
     opacity: 0.9, 
   },
   bannerButton: { 
-    backgroundColor: '#D2B496', 
+    backgroundColor: THEME_COLORS.secondary, 
     alignSelf: 'flex-start', 
     paddingHorizontal: 15, 
     paddingVertical: 8, 
@@ -94,6 +113,7 @@ export const styles = StyleSheet.create({
     fontWeight: '700', 
     fontSize: 12, 
   },
+  /* Sections */
   sectionHeader: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
@@ -105,12 +125,13 @@ export const styles = StyleSheet.create({
   sectionTitle: { 
     fontSize: 18, 
     fontWeight: '700', 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
   },
   seeAll: { 
-    color: '#8E8E93', 
+    color: THEME_COLORS.grayText, 
     fontSize: 13, 
   },
+  /* Categorys */
   categoryScroll: { 
     paddingLeft: 20, 
   },
@@ -119,26 +140,26 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 18, 
     paddingVertical: 10, 
     borderRadius: 12, 
-    backgroundColor: '#F2F2F7', 
+    backgroundColor: THEME_COLORS.invisibleBorderColor, 
     marginRight: 10, 
     alignItems: 'center', 
     borderWidth: 1, 
-    borderColor: '#E5E5EA', 
+    borderColor: THEME_COLORS.borderColor, 
   },
   catItemActive: { 
-    backgroundColor: '#967662', 
-    borderColor: '#E5E5EA', 
+    backgroundColor: THEME_COLORS.main, 
+    borderColor: THEME_COLORS.borderColor, 
   },
   catLabel: { 
     marginLeft: 8, 
     fontWeight: '600', 
     fontSize: 12, 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
   },
   catLabelActive: { 
     color: '#FFF', 
   },
-
+  /* Quick Actions */
   quickActionsRow: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
@@ -172,11 +193,11 @@ export const styles = StyleSheet.create({
   actionTitle: { 
     fontWeight: '700', 
     fontSize: 14, 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
   },
   actionSub: {
     fontSize: 11, 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
     marginTop: 4, 
   },
   activityCard: { 
@@ -189,15 +210,16 @@ export const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     borderWidth: 1, 
-    borderColor: '#F2F2F7', 
+    borderColor: THEME_COLORS.invisibleBorderColor, 
     elevation: 2, 
     shadowOpacity: 0.05, 
   },
+  /* Activity Cards */
   activityImage: { 
     width: 90, 
     height: 120, 
     borderRadius: 12, 
-    backgroundColor: '#F8F9FA', 
+    backgroundColor: THEME_COLORS.softGray, 
   },
   activityImageBackground: { 
     width: '100%', 
@@ -214,19 +236,19 @@ export const styles = StyleSheet.create({
   },
   activityTag: { 
     fontSize: 10, 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
     fontWeight: '700', 
     marginBottom: 2, 
   },
   activityDate: { 
     fontSize: 10, 
-    color: '#8E8E93', 
+    color: THEME_COLORS.grayText, 
     marginBottom: 5, 
   },
   activityItemName: { 
     fontSize: 16, 
     fontWeight: '700', 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
   },
   tagRow: { 
     flexDirection: 'row',
@@ -252,13 +274,13 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: 'center', 
     borderRadius: 14,
-    borderColor: '#E5E5EA',
+    borderColor: THEME_COLORS.borderColor,
     borderWidth: 1, 
     backgroundColor: '#ffffff', 
   },
   editButtonText: { 
     fontSize: 12, 
     fontWeight: '600', 
-    color: '#2C3E50', 
+    color: THEME_COLORS.charcoalText, 
   },
 });

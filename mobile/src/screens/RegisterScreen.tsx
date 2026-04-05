@@ -1,11 +1,15 @@
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform, Image, StatusBar} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { styles } from '../Styles/MainScreen.styles';
 import { saveAuthData } from '../Utils/secureStore';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 
 export default function RegisterScreen() {
+  const [show, setShow] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState(''); 
   const [formData, setFormData] = useState({
@@ -74,96 +78,114 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        style={{ flex: 1 }}
-      >
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          
-          <View style={styles.content}>
-            <View style={styles.logoPlaceholder}>
-              <Image 
-                          source={require('../Images/logo_var2.png')} 
-                          style={styles.logoImage} 
-                          resizeMode="contain"
-                        />
-            </View>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Start your journey towards a more conscious wardrobe today.</Text>
+    <>
+      <StatusBar barStyle="dark-content"/>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+          style={{ flex: 1 }}
+        >
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             
-            <View style={{ width: '100%', marginTop: 30 }}>
-              <TextInput
-                style={styles.reginput}
-                placeholder="Username"
-                placeholderTextColor="#8E8E93"
-                value={formData.username}
-                onChangeText={(text) => setFormData({...formData, username: text})}
-              />
-              <TextInput
-                style={styles.reginput}
-                placeholder="Email Address"
-                placeholderTextColor="#8E8E93"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={formData.email}
-                onChangeText={(text) => setFormData({...formData, email: text})}
-              />
-              <TextInput
-                style={styles.reginput}
-                placeholder="Password"
-                placeholderTextColor="#8E8E93"
-                secureTextEntry
-                value={formData.password}
-                onChangeText={(text) => setFormData({...formData, password: text})}
-              />
-              <View style={styles.strengthBarContainer}>
-              {[1, 2, 3, 4, 5].map((index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.strengthBar,
-                    index <= strength ? styles.activeBar : styles.inactiveBar
-                  ]}
-                />
-              ))}
+            <View style={styles.content}>
+              <View style={styles.logoPlaceholder}>
+                <Image 
+                            source={require('../Images/logo_var2.png')} 
+                            style={styles.logoImage} 
+                            resizeMode="contain"
+                          />
               </View>
-              <Text style={[
-                styles.requirementText, 
-                strength === 5 ? styles.validText : styles.invalidText
-              ]}>
-                At least 8 characters, 1 lowercase, 1 uppercase, 1 number, and 1 special character.
-              </Text>
-              <TextInput
-                style={styles.reginput}
-                placeholder="Confirm Password"
-                placeholderTextColor="#8E8E93"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={(text) => setConfirmPassword(text)}
-              />
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Start your journey towards a more conscious wardrobe today.</Text>
+              
+              <View style={{ width: '100%', marginTop: 30 }}>
+                <TextInput
+                  style={styles.reginput}
+                  placeholder="Username"
+                  placeholderTextColor="#8E8E93"
+                  value={formData.username}
+                  onChangeText={(text) => setFormData({...formData, username: text})}
+                />
+                <TextInput
+                  style={styles.reginput}
+                  placeholder="Email Address"
+                  placeholderTextColor="#8E8E93"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={formData.email}
+                  onChangeText={(text) => setFormData({...formData, email: text})}
+                />
+                <View style={styles.passwordInput}>
+                  <TextInput
+                    style={styles.reginput}
+                    placeholder="Password"
+                    placeholderTextColor="#8E8E93"
+                    secureTextEntry={!visible}
+                    value={formData.password}
+                    onChangeText={(text) => setFormData({...formData, password: text})}
+                    onPressIn={() => setShow(true)}
+                    onEndEditing={() => setShow(false)}
+                  />
+                  <MaterialIcons
+                  style={styles.iconStyle}
+                  name={visible ? "visibility" : "visibility-off"}
+                  size={24} 
+                  color="black"
+                  onPress={() => {setVisible(!visible)}}
+                  />
+                </View>
+                {show && 
+                <>
+                  <View style={styles.strengthBarContainer}>
+                  {[1, 2, 3, 4, 5].map((index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.strengthBar,
+                        index <= strength ? styles.activeBar : styles.inactiveBar
+                      ]}
+                    />
+                  ))}
+                  </View>
+                  <Text style={[
+                    styles.requirementText, 
+                    strength === 5 ? styles.validText : styles.invalidText
+                  ]}>
+                    At least 8 characters, 1 lowercase, 1 uppercase, 1 number, and 1 special character.
+                  </Text>
+                </>
+                }
+                <TextInput
+                  style={styles.reginput}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#8E8E93"
+                  secureTextEntry
+                  value={confirmPassword}
+                  onChangeText={(text) => setConfirmPassword(text)}
+                />
+              </View>
             </View>
-          </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={styles.primaryButton} 
-              onPress={handleRegister} 
-              disabled={isLoading}
-            >
-              {isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryButtonText}>Sign Up</Text>}
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity 
+                style={styles.primaryButton} 
+                onPress={handleRegister} 
+                disabled={isLoading}
+              >
+                {isLoading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryButtonText}>Sign Up</Text>}
+              </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.secondaryButton} 
-              onPress={() => router.push('/login')}
-            >
-              <Text style={styles.secondaryButtonText}>Already have an account? Log In</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity 
+                style={styles.secondaryButton} 
+                onPress={() => router.push('/login')}
+              >
+                <Text style={styles.secondaryButtonText}>Already have an account? Log In</Text>
+              </TouchableOpacity>
+            </View>
 
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </>
   );
 };

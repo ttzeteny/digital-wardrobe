@@ -1,44 +1,87 @@
 import { StyleSheet } from "react-native";
 
+const THEME_COLORS = {
+  main: '#967662',
+  secondary: '#D2B496',
+  tertiary: '#E4D3C6',
+  // Background colors
+  back: '#f8f4f0',
+  softGray: '#F8F9FA',
+  // Border colors
+  borderColor: '#E5E5EA',
+  invisibleBorderColor: '#F2F2F7',
+  // Text colors
+  charcoalText: '#2C3E50',
+  grayText: '#8E8E93',
+};
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: THEME_COLORS.back,
     paddingHorizontal: 20,
   },
+  /* Header Styles */
   header: {
+    width: '100%',
+    height: 150,
     alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 30,
+    flexDirection: 'row',
+    gap: 25, 
+    marginBottom: 15,
+    borderRadius: 20,
+    padding: 10,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#F2F2F7',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    backgroundColor: THEME_COLORS.softGray,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#E5E5EA',
+    borderColor: THEME_COLORS.borderColor,
+  },
+  headerData: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   userName: {
-    fontSize: 24,
+    fontSize: 27,
     fontWeight: '700',
-    color: '#000000',
+    color: THEME_COLORS.charcoalText,
   },
   userEmail: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginTop: 4,
+    fontSize: 17,
+    color: THEME_COLORS.grayText,
   },
+  editButton: {
+    backgroundColor: THEME_COLORS.secondary,
+    flexDirection: 'row',
+    gap: 8,
+    height: 40,
+    width: 120,
+    alignItems: 'center',
+    marginTop: 10,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderRadius: 12,
+    borderColor: THEME_COLORS.borderColor
+  },
+  editButtonText: {
+    color: 'white' ,
+    fontWeight: 700,
+  },
+  /* Stats */
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#F9F9F9',
-    borderRadius: 16,
-    paddingVertical: 20,
+    paddingVertical: 16,
     marginBottom: 30,
+    borderColor: THEME_COLORS.borderColor,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
   },
   statItem: {
     alignItems: 'center',
@@ -46,30 +89,36 @@ export const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#967662',
+    color: THEME_COLORS.main,
   },
   statLabel: {
+    color: THEME_COLORS.grayText,
     fontSize: 12,
-    color: '#8E8E93',
     marginTop: 4,
     textTransform: 'uppercase',
   },
+  /* Settings */
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 15,
-    color: '#000000',
+    marginVertical: 8,
+    color: THEME_COLORS.charcoalText,
   },
   menuItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
+    borderBottomColor: THEME_COLORS.invisibleBorderColor,
+  },
+  menuItemLabel: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   menuItemText: {
     fontSize: 16,
-    color: '#000000',
+    color: THEME_COLORS.charcoalText,
   },
 });

@@ -1,11 +1,19 @@
 import { StyleSheet } from "react-native";
+/* Contains styles of Main-, Login- and Registerpage */
 
 const THEME_COLORS = {
   main: '#967662',
-  charcoal: '#2C3E50',
-  white: '#FFFFFF',
+  secondary: '#D2B496',
+  tertiary: '#E4D3C6',
+  // Background colors
+  back: '#f8f4f0',
   softGray: '#F8F9FA',
-  lightAquaFade: 'rgba(0, 255, 255, 0.05)', 
+  // Border colors
+  borderColor: '#E5E5EA',
+  invisibleBorderColor: '#F2F2F7',
+  // Text colors
+  charcoalText: '#2C3E50',
+  grayText: '#8E8E93',
 };
 
 export const styles = StyleSheet.create({
@@ -41,7 +49,7 @@ export const styles = StyleSheet.create({
   title: { 
     fontSize: 34, 
     fontWeight: '800', 
-    color: THEME_COLORS.charcoal, 
+    color: THEME_COLORS.charcoalText, 
     marginBottom: 10, 
     textAlign: 'center' 
     },
@@ -63,7 +71,7 @@ export const styles = StyleSheet.create({
     marginBottom: 15, 
     height: 56, 
     justifyContent: 'center',
-    shadowColor: THEME_COLORS.charcoal,
+    shadowColor: THEME_COLORS.charcoalText,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -136,8 +144,19 @@ export const styles = StyleSheet.create({
     height: 56,
     borderRadius: 14,
     paddingHorizontal: 16,
+    paddingRight: 50,
     fontSize: 16,
     marginBottom: 12,
     color: '#000000',
+  },
+  passwordInput: {
+    width: '100%',
+    justifyContent: 'center',
+  },
+  iconStyle: {
+    position: 'absolute',
+    right: 10,
+    padding: 10,
+    marginBottom: 10,
   },
 });
