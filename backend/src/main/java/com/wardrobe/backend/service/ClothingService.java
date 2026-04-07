@@ -7,6 +7,7 @@ import com.wardrobe.backend.repository.ClothingItemRepository;
 import com.wardrobe.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class ClothingService {
         item.setCategory(request.getCategory());
         item.setColor(request.getColor());
         item.setBrand(request.getBrand());
+        item.setSize(request.getSize());
+        item.setTags(request.getTags());
         item.setImageUrl(request.getImageUrl());
         item.setPrice(request.getPrice());
         item.setUser(user);
@@ -34,10 +37,11 @@ public class ClothingService {
         return clothingItemRepository.save(item);
     }
 
+    @Transactional(readOnly = true)
     public List<ClothingItem> getUserWardrobe(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return clothingItemRepository.findByUserId(user.getId());
+        return clothingItemRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
     }
 }

@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { styles } from '../Styles/MainScreen.styles';
-import { saveAuthData } from '../Utils/secureStore';
+import { getAuthData, saveAuthData } from '../Utils/secureStore';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
@@ -36,8 +36,23 @@ export default function LoginScreen() {
       setIsLoading(false);
 
       if (response.ok) {
+        if (!data?.token) {
+          Alert.alert("Login Failed", "Backend did not return a valid token.");
+          return;
+        }
 
-        await saveAuthData(data.token, data.username);
+        const normalizedToken = String(data.token).trim().replace(/^"|"$/g, '');
+        const saved = await saveAuthData(normalizedToken, data.username);
+        if (!saved) {
+          Alert.alert("Login Failed", "Could not persist session token on this device.");
+          return;
+        }
+
+        const authData = await getAuthData();
+        if (!authData?.token) {
+          Alert.alert("Login Failed", "Session token was not readable after save.");
+          return;
+        }
         
         router.replace('/(tabs)');
       } else {

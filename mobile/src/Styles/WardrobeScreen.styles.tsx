@@ -52,6 +52,15 @@ export const styles = StyleSheet.create({
   headerIcons: { 
     flexDirection: 'row', 
   },
+  iconCircle: { 
+    width: 40, 
+    height: 40, 
+    borderRadius: 20, 
+    backgroundColor: THEME_COLORS.tertiary, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginLeft: 10, 
+  },
   /* Page */
   scrollPadding: { 
     backgroundColor: THEME_COLORS.back,
@@ -71,16 +80,8 @@ export const styles = StyleSheet.create({
     fontSize: 13, 
   },
   /* Category */
-  iconCircle: { 
-    width: 40, 
-    height: 40, 
-    borderRadius: 20, 
-    backgroundColor: THEME_COLORS.tertiary, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginLeft: 10, 
-  },
   categoryScroll: { 
+    marginTop: 20,
     paddingLeft: 20, 
   },
   catItem: { 
@@ -106,5 +107,33 @@ export const styles = StyleSheet.create({
   },
   catLabelActive: { 
     color: '#FFF', 
+  },
+  addButtonView:{
+    width: 125,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf:'flex-end',
+    marginRight: 20,
+    marginBottom: 30,
+  },
+  addButton: {
+    width: 120,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: THEME_COLORS.borderColor,
+    borderRadius: 20,
+    borderWidth: 1,
+    backgroundColor: THEME_COLORS.secondary,
+  },
+  addButtonText: {
+    color: 'white',
+    fontSize: 50,
+    fontWeight: '200',
+    textAlign: 'center',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    paddingBottom: 65,
   },
 });
