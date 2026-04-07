@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface ClothingItemRepository extends JpaRepository<ClothingItem, Long> {
 
-    List<ClothingItem> findByUserId(Long userId);
+    List<ClothingItem> findByUserIdOrderByCreatedAtDesc(Long userId);
 }

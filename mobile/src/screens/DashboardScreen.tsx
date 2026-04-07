@@ -1,17 +1,19 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, StatusBar, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { styles } from '../Styles/DashboardScreen.styles';
 import { useEffect, useState } from 'react';
 import { getAuthData } from '../Utils/secureStore';
-import { push } from 'expo-router/build/global-state/routing';
+import { push, replace } from 'expo-router/build/global-state/routing';
+import { useFocusEffect } from '@react-navigation/native';
 
 /* Interfaces */
 
 interface CategoryItemProps {
   icon: string;
   label: string;
+  id: number;
   active?: boolean;
 }
 
@@ -26,13 +28,62 @@ interface ActionCardProps {
 }
 
 interface ActivityCardProps {
-  image: any;
+  imageUrl?: string;
   itemName: string;
   tags: string[];
   dateAdded: string;
 }
 
+interface ClothingItemApi {
+  id: number;
+  name: string;
+  tags?: string[];
+  imageUrl?: string;
+  createdAt?: string;
+}
+
+const normalizeImageUri = (raw?: string) => {
+  if (!raw) {
+    return undefined;
+  }
+
+  const cleaned = String(raw).trim().replace(/^"|"$/g, '');
+  if (!cleaned || cleaned === 'null') {
+    return undefined;
+  }
+
+  if (
+    cleaned.startsWith('data:image/') ||
+    cleaned.startsWith('http://') ||
+    cleaned.startsWith('https://') ||
+    cleaned.startsWith('file://')
+  ) {
+    return cleaned;
+  }
+
+  const looksLikeBase64 = /^[A-Za-z0-9+/=\r\n]+$/.test(cleaned) && cleaned.length > 120;
+  if (looksLikeBase64) {
+    const compactBase64 = cleaned.replace(/\r|\n/g, '');
+    return `data:image/jpeg;base64,${compactBase64}`;
+  }
+
+  return undefined;
+};
+
 export default function DigitalWardrobeDashboard() {
+
+  const [active, setActive] = useState(1);
+  const [recentItems, setRecentItems] = useState<ClothingItemApi[]>([]);
+  const [wardrobeCount, setWardrobeCount] = useState(0);
+  const [isLoadingRecent, setIsLoadingRecent] = useState(false);
+  const [recentError, setRecentError] = useState<string | null>(null);
+
+  const CategoryItem = ({ icon, label, id, active }: CategoryItemProps) => (
+  <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]} onPress={() => setActive(id)}>
+    <IconSymbol name={icon as any} size={18} color={active ? '#FFF' : '#2C3E50'} />
+    <Text style={[styles.catLabel, active && styles.catLabelActive]}>{label}</Text>
+  </TouchableOpacity>
+  );
 
   const [user, setUser] = useState({ username: 'Loading...', email: '' });
 
@@ -48,6 +99,109 @@ export default function DigitalWardrobeDashboard() {
     };
     loadUserData();
   }, []);
+
+  const loadRecentlyAdded = React.useCallback(async () => {
+    setIsLoadingRecent(true);
+    setRecentError(null);
+
+    const authData = await getAuthData();
+    if (!authData?.token) {
+      setRecentError('No auth token found. Please log in again.');
+      setIsLoadingRecent(false);
+      return;
+    }
+
+    const rawToken = String(authData.token);
+    const token = rawToken.trim().replace(/^"|"$/g, '');
+
+    try {
+      const apiBase = process.env.EXPO_PUBLIC_API_URL;
+      if (!apiBase) {
+        setRecentError('EXPO_PUBLIC_API_URL is missing in .env');
+        setIsLoadingRecent(false);
+        return;
+      }
+
+      const response = await fetch(`${apiBase}/api/clothes/my-wardrobe?ts=${Date.now()}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        if (response.status === 401 || response.status === 403) {
+          setRecentError(`Authorization failed (${response.status}). Please log in again from Settings if needed.`);
+          return;
+        }
+        setRecentError(`Wardrobe fetch failed (${response.status}). ${errorText || 'No error body.'}`);
+        setWardrobeCount(0);
+        setRecentItems([]);
+        return;
+      }
+
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        setRecentError('Unexpected wardrobe response format from API.');
+        setWardrobeCount(0);
+        setRecentItems([]);
+        return;
+      }
+
+      const normalized = data.map((item: any) => ({
+        id: Number(item.id),
+        name: String(item.name ?? 'Unnamed item'),
+        tags: Array.isArray(item.tags) ? item.tags.filter((tag: any) => typeof tag === 'string') : [],
+        imageUrl: normalizeImageUri(typeof item.imageUrl === 'string' ? item.imageUrl : undefined),
+        createdAt: typeof item.createdAt === 'string' ? item.createdAt : undefined,
+      })) as ClothingItemApi[];
+
+      setWardrobeCount(normalized.length);
+      setRecentItems(normalized.slice(0, 2));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setRecentError(`Failed to load recent wardrobe items: ${message}`);
+      setWardrobeCount(0);
+      setRecentItems([]);
+    } finally {
+      setIsLoadingRecent(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadRecentlyAdded();
+    }, [loadRecentlyAdded])
+  );
+
+  const formatDateAdded = (createdAt?: string) => {
+    if (!createdAt) {
+      return 'Recently';
+    }
+
+    const created = new Date(createdAt);
+    const now = new Date();
+    const diffMs = now.getTime() - created.getTime();
+    const dayMs = 1000 * 60 * 60 * 24;
+    const days = Math.max(0, Math.floor(diffMs / dayMs));
+
+    if (days === 0) {
+      return 'Today';
+    }
+    if (days === 1) {
+      return '1 day ago';
+    }
+    if (days < 7) {
+      return `${days} days ago`;
+    }
+
+    const weeks = Math.floor(days / 7);
+    if (weeks === 1) {
+      return '1 week ago';
+    }
+    return `${weeks} weeks ago`;
+  };
 
   return (
     <>
@@ -87,7 +241,7 @@ export default function DigitalWardrobeDashboard() {
               <Text style={styles.bannerTitle}>WARDROBE DIGITIZER</Text>
               <Text style={styles.bannerSub}>Unlock your closet's potential.</Text>
               <Text style={styles.bannerSub}>Start scanning now.</Text>
-              <TouchableOpacity style={styles.bannerButton} onPress={() => push('/scan')}>
+              <TouchableOpacity style={styles.bannerButton} onPress={() => replace('/scan')}>
                 <Text style={styles.bannerButtonText}>
                   Scan & Organize
                 </Text>
@@ -100,10 +254,10 @@ export default function DigitalWardrobeDashboard() {
           <Text style={styles.sectionTitle}>Manage</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-          <CategoryItem icon="camera" label="DIGITIZE" active />
-          <CategoryItem icon="square.grid.2x2" label="ORGANIZE" />
-          <CategoryItem icon="calendar" label="PLAN" />
-          <CategoryItem icon="sparkles" label="STYLIST" />
+          <CategoryItem icon="camera" label="DIGITIZE" id={1} active={active == 1 ? true : false}/>
+          <CategoryItem icon="square.grid.2x2" label="ORGANIZE" id={2} active={active == 2 ? true : false} />
+          <CategoryItem icon="calendar" label="PLAN" id={3} active={active == 3 ? true : false}/>
+          <CategoryItem icon="sparkles" label="STYLIST" id={4} active={active == 4 ? true : false}/>
         </ScrollView>
         {/* Quick Actions */}
         <View style={styles.sectionHeader}>
@@ -116,7 +270,7 @@ export default function DigitalWardrobeDashboard() {
               line1="Wardrobe" 
               line2="Inventory" 
               sub1="MY ITEMS:" 
-              sub2="124 Clothes | 45 Acc." 
+              sub2={`${wardrobeCount} Clothes`} 
               color="#D2B496" 
               icon="hanger"
               iconBackground="#E4D3C6"
@@ -137,42 +291,31 @@ export default function DigitalWardrobeDashboard() {
           <Text style={styles.sectionTitle}>Closet Activity</Text>
           <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
+        {isLoadingRecent ? <Text style={styles.seeAll}>Loading recent items...</Text> : null}
+        {recentError ? <Text style={styles.seeAll}>{recentError}</Text> : null}
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <ActivityCard 
-            image={<ImageBackground
-              source={require('../Images/blue_jeans.png')}
-              style={styles.activityImageBackground}
-              imageStyle={styles.activityImageTexture}
-              resizeMode="cover"
-            />} 
-            itemName="Blue Denim Jeans"
-            tags={["Jeans", "Denim", "Blue", "Bottoms", "Casual"]}
-            dateAdded="2 days ago"
-          />
-          <ActivityCard 
-            image={<ImageBackground
-              source={require('../Images/red_sweater.png')}
-              style={styles.activityImageBackground}
-              imageStyle={styles.activityImageTexture}
-              resizeMode="cover"
-            />} 
-            itemName="Red Sweater"
-            tags={["Sweater", "Red", "Casual"]}
-            dateAdded="1 week ago"
-          />
+          {recentItems.length > 0 ? recentItems.map((item) => (
+            <ActivityCard
+              key={item.id}
+              imageUrl={item.imageUrl}
+              itemName={item.name}
+              tags={item.tags && item.tags.length > 0 ? item.tags : ['No tags']}
+              dateAdded={formatDateAdded(item.createdAt)}
+            />
+          )) : (
+            <ActivityCard
+              imageUrl={undefined}
+              itemName="No items yet"
+              tags={['None']}
+              dateAdded="Waiting for your first item"
+            />
+          )}
         </ScrollView>
       </ScrollView>
     </SafeAreaView>
     </>
   );
 }
-
-const CategoryItem = ({ icon, label, active }: CategoryItemProps) => (
-  <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]}>
-    <IconSymbol name={icon as any} size={18} color={active ? '#FFF' : '#2C3E50'} />
-    <Text style={[styles.catLabel, active && styles.catLabelActive]}>{label}</Text>
-  </TouchableOpacity>
-);
 
 const QuickActionCard = ({ line1, line2, sub1, sub2, color, icon , iconBackground}: ActionCardProps) => (
   <TouchableOpacity style={[styles.actionCard, { backgroundColor: color }]}>
@@ -192,9 +335,32 @@ const QuickActionCard = ({ line1, line2, sub1, sub2, color, icon , iconBackgroun
   </TouchableOpacity>
 );
 
-const ActivityCard = ({image, itemName, tags, dateAdded}: ActivityCardProps) => (
-  <View style={styles.activityCard}>
-    <View style={styles.activityImage}>{image}</View>
+const ActivityCard = ({ imageUrl, itemName, tags, dateAdded }: ActivityCardProps) => {
+  const cleaned = imageUrl && imageUrl !== 'null' ? imageUrl.trim() : '';
+  const looksLikeSupportedUri = cleaned.startsWith('data:image/') || cleaned.startsWith('http://') || cleaned.startsWith('https://') || cleaned.startsWith('file://');
+  const [imageFailed, setImageFailed] = React.useState(false);
+
+  const useFallback = imageFailed || !looksLikeSupportedUri;
+
+  return (
+    <View style={styles.activityCard}>
+      <View style={styles.activityImage}>
+        {useFallback ? (
+          <Image
+            source={require('../Images/red_sweater.png')}
+            style={styles.activityImageBackground}
+            resizeMode="cover"
+          />
+        ) : (
+          <ImageBackground
+            source={{ uri: cleaned }}
+            style={styles.activityImageBackground}
+            imageStyle={styles.activityImageTexture}
+            resizeMode="cover"
+            onError={() => setImageFailed(true)}
+          />
+        )}
+      </View>
       <View style={styles.activityInfo}>
         <Text style={styles.activityTag}>Recently added</Text>
         <Text style={styles.activityDate}>{dateAdded}</Text>
@@ -203,16 +369,21 @@ const ActivityCard = ({image, itemName, tags, dateAdded}: ActivityCardProps) => 
           <View style={styles.miniTag}>
             <Text style={styles.miniTagText}>{tags[0]}</Text>
           </View>
-          <View style={styles.miniTag}>
-            <Text style={styles.miniTagText}>{tags[1]}</Text>
-          </View>
-          <View style={styles.miniTag}>
-            <Text style={styles.miniTagText}>{tags.length - 2} more</Text>
-          </View>
+          {tags[1] ? (
+            <View style={styles.miniTag}>
+              <Text style={styles.miniTagText}>{tags[1]}</Text>
+            </View>
+          ) : null}
+          {tags.length > 2 ? (
+            <View style={styles.miniTag}>
+              <Text style={styles.miniTagText}>{tags.length - 2} more</Text>
+            </View>
+          ) : null}
         </View>
         <TouchableOpacity style={styles.editButton}>
-        <Text style={styles.editButtonText}>Edit details</Text>
+          <Text style={styles.editButtonText}>Edit details</Text>
         </TouchableOpacity>
       </View>
     </View>
-);
+  );
+};

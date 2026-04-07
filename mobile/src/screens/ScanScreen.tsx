@@ -1,39 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, AppState } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, AppState, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../Styles/ScanScreen.styles';
-import { useRouter } from 'expo-router';
+import { replace } from 'expo-router/build/global-state/routing';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ScanClothingPage() {
+  /* Hooks */
+  /* Camera permission hooks */
   const [permission, getPermission, getPermissionsAsync] = useCameraPermissions();
+  /* Capture photo hooks */
+  const cameraRef = useRef<any>(null);
   const appState = React.useRef(AppState.currentState);
-  const router = useRouter();
+  const [isCapturing, setIsCapturing] = useState(false);
+  /* Flash mode hooks */
   const [flash, setFlash] = useState('false');
+  
+  /* Save pending scan data */
+  const savePendingScan = async (payload: { uri: string; base64?: string | null }) => {
+    await AsyncStorage.setItem('pendingScan', JSON.stringify(payload));
+  };
 
-  const toggleFlash = () => {
-    setFlash(prev => (prev === 'false' ? 'true' : 'false'));
-  }
-
+  /* Image picker */
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes:  [ 'images' ],
       quality: 1,
+      allowsEditing: true,
+      aspect: [1, 3],
+      base64: true,
     });
 
     if (!result.canceled) {
-      console.log("Selected image:", result.assets[0].uri);
-      // Here the image would be cropped and sent to database and scan confirm page would be shown to set parameters and confirm the scan.
+      const selected = result.assets[0];
+      await savePendingScan({ uri: selected.uri, base64: selected.base64 });
+      replace('/confirmscan');
     }
   };
 
+  /* Capture photo */
   const takePicture = async () => {
-    console.log("Snap!");
-    // Here the image would be cropped and sent to database and scan confirm page would be shown to set parameters and confirm the scan.
+    if (!cameraRef.current || isCapturing) {
+      return;
+    }
+
+    try {
+      setIsCapturing(true);
+      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, base64: true });
+
+      if (!photo?.uri) {
+        throw new Error('Camera did not return an image.');
+      }
+
+      await savePendingScan({ uri: photo.uri, base64: photo.base64 });
+      replace('/confirmscan');
+    } catch (error) {
+      console.error('Failed to capture photo:', error);
+      Alert.alert('Capture failed', error instanceof Error ? error.message : 'Could not capture the photo.');
+    } finally {
+      setIsCapturing(false);
+    }
   };
 
+  /* Permission handling */
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -74,17 +106,23 @@ export default function ScanClothingPage() {
           <Text style={styles.btnText}>Allow Camera Access</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => replace("/(tabs)")}>
           <Text style={{ color: '#666', marginTop: 15 }}>Not Now</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
+  /* Toggle flash mode */
+  const toggleFlash = () => {
+    setFlash(prev => (prev === 'false' ? 'true' : 'false'));
+  }
+
   return (
     <View style={styles.container}>
 
       <CameraView 
+        ref={cameraRef}
         style={StyleSheet.absoluteFillObject} 
         facing="back"
         mode="picture"
@@ -93,7 +131,7 @@ export default function ScanClothingPage() {
 
       <SafeAreaView style={styles.overlay} pointerEvents="box-none">
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => replace("/(tabs)")}>
             <Ionicons name="close" size={30} color="white" />
           </TouchableOpacity>
         </View>
@@ -110,8 +148,8 @@ export default function ScanClothingPage() {
               color={flash === 'true' ? "#FFD700" : "white"} 
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.shutterButton} onPress={() => takePicture()}>
-            <View style={styles.shutterInner} />
+          <TouchableOpacity style={styles.shutterButton} onPress={() => takePicture()} disabled={isCapturing}>
+            {isCapturing ? <ActivityIndicator color="white" /> : <View style={styles.shutterInner} />}
           </TouchableOpacity>
           <TouchableOpacity onPress={() => pickImage()}>
             <Ionicons name="images" size={28} color="white" />
