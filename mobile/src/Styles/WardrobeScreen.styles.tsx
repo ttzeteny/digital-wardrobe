@@ -136,4 +136,77 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'center',
     paddingBottom: 65,
   },
+  itemsContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 80,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+    marginBottom: 15,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#8E8E93',
+    marginTop: 50,
+    fontSize: 16,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  card: {
+    width: '48%',
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  imageWrapper: {
+    width: '100%',
+    height: 180,
+    backgroundColor: '#F8F9FA',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+  priceTag: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    margin: 4
+  },
+  priceText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+  },
+  cardInfo: {
+    padding: 10,
+  },
+  cardBrand: {
+    fontSize: 11,
+    color: '#8E8E93',
+    textTransform: 'uppercase',
+    fontWeight: '700',
+  },
+  cardName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2C3E50',
+    marginTop: 3,
+  },
 });

@@ -20,7 +20,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Ez az email cím már foglalt!");
+            throw new RuntimeException("This email is already in use!");
         }
 
         User user = new User();

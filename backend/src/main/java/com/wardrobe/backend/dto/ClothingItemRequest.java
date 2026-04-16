@@ -14,4 +14,5 @@ public class ClothingItemRequest {
     private List<String> tags;
     private String imageUrl;
     private Double price;
+    private String currency;
 }

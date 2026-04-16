@@ -32,6 +32,7 @@ public class ClothingService {
         item.setTags(request.getTags());
         item.setImageUrl(request.getImageUrl());
         item.setPrice(request.getPrice());
+        item.setCurrency(request.getCurrency() != null ? request.getCurrency() : "USD");
         item.setUser(user);
 
         return clothingItemRepository.save(item);

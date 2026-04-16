@@ -7,22 +7,23 @@ import { getAuthData } from '../Utils/secureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ConfirmScanScreen() {
-    /* Hooks */
     const [tagPlaceholders, setTagPlaceholder] = useState(['#summer', 'casual', 'cotton', '#favorite']);
-    /* Image Loading Hooks */
+
     const [isLoadingImage, setIsLoadingImage] = useState(true);
     const [imageUri, setImageUri] = useState('');
     const [imageBase64, setImageBase64] = useState<string | null>(null);
-    /* Confirmation Hooks */
+
     const [name, setName] = useState('');
     const [category, setCategory] = useState('');
     const [brand, setBrand] = useState('');
     const [color, setColor] = useState('');
     const [size, setSize] = useState('');
+    const [price, setPrice] = useState('');
+    const [currency, setCurrency] = useState('USD'); 
     const [tags, setTags] = useState(['', '', '', '']);
+    
     const [isSaving, setIsSaving] = useState(false);
 
-    /* Image Loading */
     const loadImage = async () => {
         try {
             const pendingScan = await AsyncStorage.getItem('pendingScan');
@@ -48,12 +49,10 @@ export default function ConfirmScanScreen() {
         }
     };
     
-    /* Loading Image begin */
     useEffect(() => {
         loadImage();
     }, []);
 
-    /* Tag management */
     const addTagRow = () => {
         setTags((prev) => [...prev, '', '']);
     };
@@ -81,7 +80,6 @@ export default function ConfirmScanScreen() {
 
     const filledTagCount = tags.filter((tag) => tag.trim().length > 0).length;
 
-    /* Confirmation Handler */
     const handleConfirm = async () => {
         if (isSaving) {
             return;
@@ -132,7 +130,8 @@ export default function ConfirmScanScreen() {
                     size: size.trim(),
                     tags: payloadTags,
                     imageUrl: normalizedDataUri,
-                    price: null, /* WILL BE IMPLEMENTED */
+                    price: price.trim() ? parseFloat(price.trim()) : null,
+                    currency: price.trim() ? currency : null,
                 }),
             });
 
@@ -151,13 +150,11 @@ export default function ConfirmScanScreen() {
         }
     };
 
-    /* Cancel Handler */
     const handleCancel = async () => {
         await AsyncStorage.removeItem('pendingScan');
         replace('/(tabs)');
     };
 
-    /* Image Loading state */
     if (isLoadingImage) {
         return (
             <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -173,7 +170,6 @@ export default function ConfirmScanScreen() {
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
                 style={{ flex: 1 }}>
-                {/* Header */}
                 <View style={styles.header}>
                     <Pressable onPress={handleCancel}>
                         <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -184,7 +180,6 @@ export default function ConfirmScanScreen() {
                     </TouchableOpacity>
                 </View> 
                 <ScrollView style={styles.scrollContent}>
-                    {/* Image */}
                     <View style={styles.imageContainer}>
                         <View>
                             <ImageBackground
@@ -198,7 +193,6 @@ export default function ConfirmScanScreen() {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    {/* Tags form */}
                     <View style={styles.form}>
                         <Text style={styles.formLabel}>Base Attributes (Required)</Text>
                             <View style={styles.inputRowOneTag}>
@@ -257,6 +251,46 @@ export default function ConfirmScanScreen() {
                                     />
                                 </View>
                             </View>
+                            
+                            <View style={styles.inputRowOneTag}>
+                                <View style={styles.inputOneTag}>
+                                    <Text style={styles.textInputLabel}>Price (Optional)</Text>
+                                    <TextInput
+                                        placeholder="e.g. 5000"
+                                        placeholderTextColor="#8E8E93"
+                                        style={styles.textInput}
+                                        value={price}
+                                        onChangeText={setPrice}
+                                        keyboardType="numeric" 
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={{ flexDirection: 'row', marginTop: 15, marginLeft: 10, marginBottom: 25, gap: 10 }}>
+                                {['USD', 'EUR', 'GBP', 'HUF'].map((c) => (
+                                    <TouchableOpacity
+                                        key={c}
+                                        onPress={() => setCurrency(c)}
+                                        style={{
+                                            paddingVertical: 8,
+                                            paddingHorizontal: 16,
+                                            borderRadius: 15,
+                                            backgroundColor: currency === c ? '#967662' : '#F2F2F7',
+                                            borderWidth: 1,
+                                            borderColor: currency === c ? '#967662' : '#E5E5EA',
+                                        }}
+                                    >
+                                        <Text style={{ 
+                                            color: currency === c ? '#FFF' : '#8E8E93', 
+                                            fontWeight: 'bold', 
+                                            fontSize: 12 
+                                        }}>
+                                            {c}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+
                         <View style={styles.tagsHeaderRow}>
                             <Text style={styles.formLabel}>Tags (Optional)</Text>
                             <View style={styles.tagsActions}>

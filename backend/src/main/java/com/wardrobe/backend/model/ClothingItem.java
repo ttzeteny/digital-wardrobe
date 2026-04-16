@@ -51,6 +51,9 @@ public class ClothingItem {
     @JsonIgnore
     private User user;
 
+    @Column(length = 10)
+    private String currency = "USD";
+
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }
