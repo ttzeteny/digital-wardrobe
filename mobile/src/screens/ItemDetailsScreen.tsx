@@ -15,6 +15,14 @@ export default function ItemDetailsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  const [initName, setInitName] = useState('');
+  const [initCategory, setInitCategory] = useState('');
+  const [initBrand, setInitBrand] = useState('');
+  const [initColor, setInitColor] = useState('');
+  const [initSize, setInitSize] = useState('');
+  const [initPrice, setInitPrice] = useState('');
+  const [initCurrency, setInitCurrency] = useState('USD');
+
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [brand, setBrand] = useState('');
@@ -37,16 +45,23 @@ export default function ItemDetailsScreen() {
         if (response.ok) {
           const data = await response.json();
           setName(data.name || '');
+          setInitName(data.name || '');
           setCategory(data.category || '');
+          setInitCategory(data.category || '');
           setBrand(data.brand || '');
+          setInitBrand(data.brand || '');
           setColor(data.color || '');
+          setInitColor(data.color || '');
           setSize(data.size || '');
+          setInitSize(data.size || '');
           setPrice(data.price ? data.price.toString() : '');
+          setInitPrice(data.price ? data.price.toString() : '');
           setCurrency(data.currency || 'HUF');
+          setInitCurrency(data.currency || 'HUF');
           setImageUrl(data.imageUrl || '');
         } else {
           Alert.alert("Error", "Could not load item details.");
-          router.back();
+          router.replace('/(tabs)/wardrobe');
         }
       } catch (error) {
         console.error("Fetch error:", error);
@@ -58,9 +73,19 @@ export default function ItemDetailsScreen() {
     if (id) fetchItem();
   }, [id]);
 
+  const comparer = (a: string, b: string) => {
+    if (a === b) return 0;
+    else return 1;
+  };
+  const anyUpdated = comparer(name, initName) || comparer(category, initCategory) || comparer(brand, initBrand) || comparer(color, initColor) || comparer(size, initSize) || comparer(price, initPrice) || comparer(currency, initCurrency);
+
   const handleUpdate = async () => {
     if (!name || !category) {
       Alert.alert("Hiba", "Név és kategória megadása kötelező!");
+      return;
+    }
+    if (!anyUpdated) {
+      router.replace('/(tabs)/wardrobe');
       return;
     }
 
@@ -83,7 +108,7 @@ export default function ItemDetailsScreen() {
 
       if (response.ok) {
         Alert.alert("Success", "Item updated successfully!");
-        router.push('/(tabs)/wardrobe');
+        router.replace('/(tabs)/wardrobe');
       } else {
         Alert.alert("Error", "Failed to update item.");
       }
@@ -108,7 +133,7 @@ export default function ItemDetailsScreen() {
               headers: { 'Authorization': `Bearer ${authData?.token}` }
             });
             if (response.ok) {
-              router.push('/(tabs)/wardrobe');
+              router.replace('/(tabs)/wardrobe');
             }
           } catch (error) {
             Alert.alert("Error", "Could not delete item.");
@@ -153,13 +178,13 @@ export default function ItemDetailsScreen() {
           <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Name</Text>
-              <TextInput style={styles.textInput} value={name} onChangeText={setName} />
+              <TextInput style={[styles.textInput, comparer(name, initName) ? { backgroundColor: '#F8F9FA' , borderColor: '#007AFF'} : {}]} value={name} onChangeText={(text) => { setName(text) }}/>
             </View>
 
             <View style={styles.inputGroup}>
                 <Text style={styles.label}>Category</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 5 }}>
-                    {['Top', 'Bottom', 'Outerwear', 'One-piece', 'Shoes', 'Underwear', 'Accessory'].map((cat) => (
+                    {['Top', 'Bottom', 'Outerwear', 'One-piece', 'Footwear', 'Underwear', 'Accessory'].map((cat) => (
                         <TouchableOpacity
                             key={cat}
                             onPress={() => setCategory(cat)}
@@ -188,25 +213,25 @@ export default function ItemDetailsScreen() {
             <View style={styles.row}>
               <View style={[styles.inputGroup, { flex: 1, marginRight: 10 }]}>
                 <Text style={styles.label}>Brand</Text>
-                <TextInput style={styles.textInput} value={brand} onChangeText={setBrand} />
+                <TextInput style={[styles.textInput, comparer(brand, initBrand) ? { backgroundColor: '#F8F9FA' , borderColor: '#007AFF'} : {}]} value={brand} onChangeText={(text) => { setBrand(text) }} />
               </View>
               <View style={[styles.inputGroup, { flex: 1 }]}>
                 <Text style={styles.label}>Color</Text>
-                <TextInput style={styles.textInput} value={color} onChangeText={setColor} />
+                <TextInput style={[styles.textInput, comparer(color, initColor) ? { backgroundColor: '#F8F9FA' , borderColor: '#007AFF'} : {}]} value={color} onChangeText={(text) => { setColor(text) }} />
               </View>
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Size</Text>
-              <TextInput style={styles.textInput} value={size} onChangeText={setSize} />
+              <TextInput style={[styles.textInput, comparer(size, initSize) ? { backgroundColor: '#F8F9FA' , borderColor: '#007AFF'} : {}]} value={size} onChangeText={(text) => { setSize(text) }} />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Price</Text>
               <TextInput 
-                style={styles.textInput} 
+                style={[styles.textInput, comparer(price, initPrice) ? { backgroundColor: '#F8F9FA' , borderColor: '#007AFF'} : {}]} 
                 value={price} 
-                onChangeText={setPrice} 
+                onChangeText={(text) => { setPrice(text) }} 
                 keyboardType="numeric" 
               />
               
@@ -233,7 +258,7 @@ export default function ItemDetailsScreen() {
               {isSaving ? (
                 <ActivityIndicator color="#FFF" />
               ) : (
-                <Text style={styles.updateButtonText}>Update Item</Text>
+                <Text style={styles.updateButtonText}>{anyUpdated ? 'Update Item' : 'Close'}</Text>
               )}
             </TouchableOpacity>
           </View>

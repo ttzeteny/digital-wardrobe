@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ImageBackground, StatusBar, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ImageBackground, StatusBar, Image, ActivityIndicator} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { styles } from '../Styles/DashboardScreen.styles';
 import { useEffect, useState } from 'react';
 import { getAuthData } from '../Utils/secureStore';
-import { push, replace } from 'expo-router/build/global-state/routing';
+import { replace } from 'expo-router/build/global-state/routing';
 import { useFocusEffect } from '@react-navigation/native';
+import { router } from 'expo-router';
 
 /* Interfaces */
 
@@ -28,6 +29,7 @@ interface ActionCardProps {
 }
 
 interface ActivityCardProps {
+  item: ClothingItemApi;
   imageUrl?: string;
   itemName: string;
   tags: string[];
@@ -158,7 +160,7 @@ export default function DigitalWardrobeDashboard() {
       })) as ClothingItemApi[];
 
       setWardrobeCount(normalized.length);
-      setRecentItems(normalized.slice(0, 2));
+      setRecentItems(normalized.slice(0, 5));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       setRecentError(`Failed to load recent wardrobe items: ${message}`);
@@ -210,7 +212,7 @@ export default function DigitalWardrobeDashboard() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <View onTouchEnd={() => push('/profile')}>
+          <View onTouchEnd={() => replace('/profile')}>
             <ImageBackground
               source={require('../Images/avatar.png')}
               style={styles.avatarPlaceholder}
@@ -289,28 +291,27 @@ export default function DigitalWardrobeDashboard() {
         {/* Closet Activity */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Closet Activity</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
-        {isLoadingRecent ? <Text style={styles.seeAll}>Loading recent items...</Text> : null}
-        {recentError ? <Text style={styles.seeAll}>{recentError}</Text> : null}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {recentItems.length > 0 ? recentItems.map((item) => (
-            <ActivityCard
-              key={item.id}
-              imageUrl={item.imageUrl}
-              itemName={item.name}
-              tags={item.tags && item.tags.length > 0 ? item.tags : ['No tags']}
-              dateAdded={formatDateAdded(item.createdAt)}
-            />
-          )) : (
-            <ActivityCard
-              imageUrl={undefined}
-              itemName="No items yet"
-              tags={['None']}
-              dateAdded="Waiting for your first item"
-            />
-          )}
-        </ScrollView>
+        <View style={{ position: 'relative', minHeight: 150 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {recentItems.length > 0 ? recentItems.map((item) => (
+              <ActivityCard
+                key={item.id}
+                item={item}
+                imageUrl={item.imageUrl}
+                itemName={item.name}
+                tags={item.tags && item.tags.length > 0 ? item.tags : ['No tags']}
+                dateAdded={formatDateAdded(item.createdAt)}
+              />
+            )) : (
+              <View style={styles.noActivityContainer}>
+                <Text style={[styles.seeAll, { fontSize: 16 }] }>No recent items to display.</Text>
+              </View>
+            )}
+          </ScrollView>
+          {isLoadingRecent ? <View style={styles.loadingOverlay}><ActivityIndicator size="large" color="#967662" /></View> : null}
+          {recentError ? <Text style={styles.seeAll}>{recentError}</Text> : null}
+        </View>
       </ScrollView>
     </SafeAreaView>
     </>
@@ -335,7 +336,7 @@ const QuickActionCard = ({ line1, line2, sub1, sub2, color, icon , iconBackgroun
   </TouchableOpacity>
 );
 
-const ActivityCard = ({ imageUrl, itemName, tags, dateAdded }: ActivityCardProps) => {
+const ActivityCard = ({item, imageUrl, itemName, tags, dateAdded }: ActivityCardProps) => {
   const cleaned = imageUrl && imageUrl !== 'null' ? imageUrl.trim() : '';
   const looksLikeSupportedUri = cleaned.startsWith('data:image/') || cleaned.startsWith('http://') || cleaned.startsWith('https://') || cleaned.startsWith('file://');
   const [imageFailed, setImageFailed] = React.useState(false);
@@ -364,7 +365,7 @@ const ActivityCard = ({ imageUrl, itemName, tags, dateAdded }: ActivityCardProps
       <View style={styles.activityInfo}>
         <Text style={styles.activityTag}>Recently added</Text>
         <Text style={styles.activityDate}>{dateAdded}</Text>
-        <Text style={styles.activityItemName}>{itemName}</Text>
+        <Text style={styles.activityItemName} numberOfLines={1}>{itemName}</Text>
         <View style={styles.tagRow}>
           <View style={styles.miniTag}>
             <Text style={styles.miniTagText}>{tags[0]}</Text>
@@ -380,7 +381,7 @@ const ActivityCard = ({ imageUrl, itemName, tags, dateAdded }: ActivityCardProps
             </View>
           ) : null}
         </View>
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity style={styles.editButton} onPress={() => router.replace(`/item-details?id=${item.id}`)}>
           <Text style={styles.editButtonText}>Edit details</Text>
         </TouchableOpacity>
       </View>

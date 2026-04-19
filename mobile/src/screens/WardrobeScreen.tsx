@@ -81,7 +81,7 @@ export default function WardrobeScreen() {
     if (active === 3) return item.category === 'Bottom';
     if (active === 4) return item.category === 'Outerwear';
     if (active === 5) return item.category === 'One-piece';
-    if (active === 6) return item.category === 'Shoes';
+    if (active === 6) return item.category === 'Footwear';
     if (active === 7) return item.category === 'Underwear';
     if (active === 8) return item.category === 'Accessory';
     return true;
@@ -116,7 +116,7 @@ export default function WardrobeScreen() {
               <CategoryItem icon="square" label="BOTTOMS" id={3} active={active == 3 ? true : false}/>
               <CategoryItem icon="square" label="OUTERWEAR" id={4} active={active == 4 ? true : false}/>
               <CategoryItem icon="square" label="ONE-PIECES" id={5} active={active == 5 ? true : false}/>
-              <CategoryItem icon="square" label="SHOES" id={6} active={active == 6 ? true : false}/>
+              <CategoryItem icon="square" label="FOOTWEAR" id={6} active={active == 6 ? true : false}/>
               <CategoryItem icon="square" label="UNDERWEAR" id={7} active={active == 7 ? true : false}/>
               <CategoryItem icon="square" label="ACCESSORIES" id={8} active={active == 8 ? true : false}/>
             </ScrollView>

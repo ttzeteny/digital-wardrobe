@@ -39,7 +39,7 @@ export default function TabLayout() {
           tabBarButton: (props) => (
             <TouchableOpacity 
               activeOpacity={0.8}
-              onPress={() => router.push('/scan')}
+              onPress={() => router.replace('/scan')}
               style={styles.fabContainer}
             >
               <View style={styles.fab}>

@@ -6,6 +6,7 @@ const THEME = {
   back: '#f8f4f0',
   charcoal: '#2C3E50',
   gray: '#8E8E93',
+  softGray: '#d7d8da',
   border: '#E5E5EA',
   white: '#FFFFFF'
 };
@@ -63,7 +64,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 1
   },
   textInput: {
-    backgroundColor: THEME.white,
+    backgroundColor: THEME.softGray,
     borderWidth: 1,
     borderColor: THEME.border,
     borderRadius: 12,
