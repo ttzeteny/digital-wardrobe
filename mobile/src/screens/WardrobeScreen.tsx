@@ -3,7 +3,7 @@ import { styles } from '../Styles/WardrobeScreen.styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import { getAuthData } from '../Utils/secureStore';
-import { push, replace } from 'expo-router/build/global-state/routing';
+import { router } from 'expo-router';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -80,7 +80,7 @@ export default function WardrobeScreen() {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.userInfo}>
-              <View onTouchEnd={() => push('/profile')}>
+              <View onTouchEnd={() => router.push('/profile')}>
                 <ImageBackground
                   source={require('../Images/avatar.png')}
                   style={styles.avatarPlaceholder}
@@ -124,9 +124,8 @@ export default function WardrobeScreen() {
                 <TouchableOpacity 
                   key={item.id} 
                   style={styles.card}
-                  onPress={() => push(`/item-details?id=${item.id}`)}
+                  onPress={() => router.push(`/item-details?id=${item.id}`)}
                 >
-                  {/* Kép konténer a pontos méretezéshez */}
                   <View style={styles.imageWrapper}>
                     <ImageBackground 
                       source={{ uri: item.imageUrl }} 
