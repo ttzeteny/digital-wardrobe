@@ -29,4 +29,20 @@ public class ClothingController {
         List<ClothingItem> myClothes = clothingService.getUserWardrobe(principal.getName());
         return ResponseEntity.ok(myClothes);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ClothingItem> getClothingItem(@PathVariable Long id, Principal principal) {
+        return ResponseEntity.ok(clothingService.getClothingItem(id, principal.getName()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClothingItem(@PathVariable Long id, Principal principal) {
+        clothingService.deleteClothingItem(id, principal.getName());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClothingItem> updateClothingItem(@PathVariable Long id, @RequestBody ClothingItemRequest request, Principal principal) {
+        return ResponseEntity.ok(clothingService.updateClothingItem(id, request, principal.getName()));
+    }
 }

@@ -45,4 +45,40 @@ public class ClothingService {
 
         return clothingItemRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
     }
+
+    @Transactional(readOnly = true)
+    public ClothingItem getClothingItem(Long id, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        ClothingItem item = clothingItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        if (!item.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized access to this item");
+        }
+
+        return item;
+    }
+
+    @Transactional
+    public void deleteClothingItem(Long id, String userEmail) {
+        ClothingItem item = getClothingItem(id, userEmail);
+        clothingItemRepository.delete(item);
+    }
+
+    @Transactional
+    public ClothingItem updateClothingItem(Long id, ClothingItemRequest request, String userEmail) {
+        ClothingItem item = getClothingItem(id, userEmail);
+
+        item.setName(request.getName());
+        item.setCategory(request.getCategory());
+        item.setColor(request.getColor());
+        item.setBrand(request.getBrand());
+        item.setSize(request.getSize());
+        item.setCurrency(request.getCurrency());
+        item.setPrice(request.getPrice());
+
+        return clothingItemRepository.save(item);
+    }
 }
