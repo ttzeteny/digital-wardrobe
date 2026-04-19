@@ -75,6 +75,18 @@ export default function WardrobeScreen() {
     fetchData();
   }, []);
 
+  const filteredItems = clothingItems.filter(item => {
+    if (active === 1) return true;
+    if (active === 2) return item.category === 'Top';
+    if (active === 3) return item.category === 'Bottom';
+    if (active === 4) return item.category === 'Outerwear';
+    if (active === 5) return item.category === 'One-piece';
+    if (active === 6) return item.category === 'Shoes';
+    if (active === 7) return item.category === 'Underwear';
+    if (active === 8) return item.category === 'Accessory';
+    return true;
+  });
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
           {/* Header */}
@@ -102,54 +114,58 @@ export default function WardrobeScreen() {
               <CategoryItem icon="grid-outline" label="ALL ITEMS" id={1} active={active == 1 ? true : false}/>
               <CategoryItem icon="shirt-outline" label="TOPS" id={2} active={active == 2 ? true : false}/>
               <CategoryItem icon="square" label="BOTTOMS" id={3} active={active == 3 ? true : false}/>
-              <CategoryItem icon="square" label="OUTERWEARS" id={4} active={active == 4 ? true : false}/>
+              <CategoryItem icon="square" label="OUTERWEAR" id={4} active={active == 4 ? true : false}/>
               <CategoryItem icon="square" label="ONE-PIECES" id={5} active={active == 5 ? true : false}/>
               <CategoryItem icon="square" label="SHOES" id={6} active={active == 6 ? true : false}/>
               <CategoryItem icon="square" label="UNDERWEAR" id={7} active={active == 7 ? true : false}/>
               <CategoryItem icon="square" label="ACCESSORIES" id={8} active={active == 8 ? true : false}/>
             </ScrollView>
 
-            <View style={styles.itemsContainer}>
-          <Text style={styles.sectionTitle}>
-            {active === 1 ? `My Wardrobe (${clothingItems.length})` : 'Filtered Items'}
-          </Text>
+          <View style={styles.itemsContainer}>
+            <Text style={styles.sectionTitle}>
+              {active === 1 ? `My Wardrobe (${clothingItems.length})` : `Filtered Items (${filteredItems.length})`}
+            </Text>
 
-          {isLoadingItems ? (
-            <ActivityIndicator size="large" color="#967662" style={{ marginTop: 50 }} />
-          ) : clothingItems.length === 0 ? (
-            <Text style={styles.emptyText}>Your wardrobe is empty. Tap the + button to add clothes!</Text>
-          ) : (
-            <View style={styles.grid}>
-              {clothingItems.map((item) => (
-                <TouchableOpacity 
-                  key={item.id} 
-                  style={styles.card}
-                  onPress={() => router.push(`/item-details?id=${item.id}`)}
-                >
-                  <View style={styles.imageWrapper}>
-                    <ImageBackground 
-                      source={{ uri: item.imageUrl }} 
-                      style={styles.cardImage}
-                      imageStyle={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-                      resizeMode="cover"
-                    >
-                      {item.price ? (
-                        <View style={styles.priceTag}>
-                          <Text style={styles.priceText}>{item.price} {item.currency || 'USD'}</Text>
-                        </View>
-                      ) : null}
-                    </ImageBackground>
-                  </View>
-                  
-                  <View style={styles.cardInfo}>
-                    <Text style={styles.cardBrand}>{item.brand}</Text>
-                    <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
+            {isLoadingItems ? (
+              <ActivityIndicator size="large" color="#967662" style={{ marginTop: 50 }} />
+            ) : filteredItems.length === 0 ? (
+              <Text style={styles.emptyText}>
+                {clothingItems.length === 0 
+                  ? "Your wardrobe is empty. Tap the + button to add clothes!" 
+                  : "No items found in this category."}
+              </Text>
+            ) : (
+              <View style={styles.grid}>
+                {filteredItems.map((item) => (
+                  <TouchableOpacity 
+                    key={item.id} 
+                    style={styles.card}
+                    onPress={() => router.push(`/item-details?id=${item.id}`)}
+                  >
+                    <View style={styles.imageWrapper}>
+                      <ImageBackground 
+                        source={{ uri: item.imageUrl }} 
+                        style={styles.cardImage}
+                        imageStyle={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
+                        resizeMode="cover"
+                      >
+                        {item.price ? (
+                          <View style={styles.priceTag}>
+                            <Text style={styles.priceText}>{item.price} {item.currency || 'USD'}</Text>
+                          </View>
+                        ) : null}
+                      </ImageBackground>
+                    </View>
+                    
+                    <View style={styles.cardInfo}>
+                      <Text style={styles.cardBrand}>{item.brand}</Text>
+                      <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
           </ScrollView>
     </SafeAreaView>
   );

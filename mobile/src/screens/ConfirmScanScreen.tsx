@@ -207,17 +207,35 @@ export default function ConfirmScanScreen() {
                                     />
                                 </View>
                             </View>
+                            <View style={{ marginBottom: 15, marginTop: 10 }}>
+                                <Text style={styles.textInputLabel}>Category<Text style={styles.required}>*</Text></Text>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8, marginLeft: 10 }}>
+                                    {['Top', 'Bottom', 'Outerwear', 'One-piece', 'Shoes', 'Underwear', 'Accessory'].map((cat) => (
+                                        <TouchableOpacity
+                                            key={cat}
+                                            onPress={() => setCategory(cat)}
+                                            style={{
+                                                paddingVertical: 10,
+                                                paddingHorizontal: 18,
+                                                borderRadius: 20,
+                                                backgroundColor: category === cat ? '#967662' : '#F2F2F7',
+                                                marginRight: 10,
+                                                borderWidth: 1,
+                                                borderColor: category === cat ? '#967662' : '#E5E5EA'
+                                            }}
+                                        >
+                                            <Text style={{ 
+                                                color: category === cat ? '#FFF' : '#8E8E93', 
+                                                fontWeight: 'bold', 
+                                                fontSize: 13 
+                                            }}>
+                                                {cat}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+                            </View>
                             <View style={styles.inputRowMultiTag}>
-                                <View style={styles.inputMultiTag}>
-                                    <Text style={styles.textInputLabel}>Category<Text style={styles.required}>*</Text></Text>
-                                    <TextInput
-                                        placeholder="Shirt, Pants..."
-                                        placeholderTextColor="#8E8E93"
-                                        style={styles.textInput}
-                                        value={category}
-                                        onChangeText={setCategory}
-                                    />
-                                </View>
                                 <View style={styles.inputMultiTag}>
                                     <Text style={styles.textInputLabel}>Brand<Text style={styles.required}>*</Text></Text>
                                     <TextInput
@@ -226,6 +244,28 @@ export default function ConfirmScanScreen() {
                                         style={styles.textInput}
                                         value={brand}
                                         onChangeText={setBrand}
+                                    />
+                                </View>
+                                <View style={styles.inputMultiTag}>
+                                    <Text style={styles.textInputLabel}>Color<Text style={styles.required}>*</Text></Text>
+                                    <TextInput
+                                        placeholder="Red, Blue..."
+                                        placeholderTextColor="#8E8E93"
+                                        style={styles.textInput}
+                                        value={color}
+                                        onChangeText={setColor}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.inputRowOneTag}>
+                                <View style={styles.inputOneTag}>
+                                    <Text style={styles.textInputLabel}>Size<Text style={styles.required}>*</Text></Text>
+                                    <TextInput
+                                        placeholder="S, M, L..."
+                                        placeholderTextColor="#8E8E93"
+                                        style={styles.textInput}
+                                        value={size}
+                                        onChangeText={setSize}
                                     />
                                 </View>
                             </View>
