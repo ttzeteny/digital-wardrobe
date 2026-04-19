@@ -210,7 +210,7 @@ export default function ConfirmScanScreen() {
                             <View style={{ marginBottom: 15, marginTop: 10 }}>
                                 <Text style={styles.textInputLabel}>Category<Text style={styles.required}>*</Text></Text>
                                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 8, marginLeft: 10 }}>
-                                    {['Top', 'Bottom', 'Outerwear', 'One-piece', 'Shoes', 'Underwear', 'Accessory'].map((cat) => (
+                                    {['Top', 'Bottom', 'Outerwear', 'One-piece', 'Footwear', 'Underwear', 'Accessory'].map((cat) => (
                                         <TouchableOpacity
                                             key={cat}
                                             onPress={() => setCategory(cat)}
@@ -269,29 +269,6 @@ export default function ConfirmScanScreen() {
                                     />
                                 </View>
                             </View>
-                            <View style={styles.inputRowMultiTag}>
-                                <View style={styles.inputMultiTag}>
-                                    <Text style={styles.textInputLabel}>Color<Text style={styles.required}>*</Text></Text>
-                                    <TextInput
-                                        placeholder="Red, Blue..."
-                                        placeholderTextColor="#8E8E93"
-                                        style={styles.textInput}
-                                        value={color}
-                                        onChangeText={setColor}
-                                    />
-                                </View>
-                                <View style={styles.inputMultiTag}>
-                                    <Text style={styles.textInputLabel}>Size<Text style={styles.required}>*</Text></Text>
-                                    <TextInput
-                                        placeholder="S, M, L..."
-                                        placeholderTextColor="#8E8E93"
-                                        style={styles.textInput}
-                                        value={size}
-                                        onChangeText={setSize}
-                                    />
-                                </View>
-                            </View>
-                            
                             <View style={styles.inputRowOneTag}>
                                 <View style={styles.inputOneTag}>
                                     <Text style={styles.textInputLabel}>Price (Optional)</Text>

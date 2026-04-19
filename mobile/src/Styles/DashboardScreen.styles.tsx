@@ -283,4 +283,19 @@ export const styles = StyleSheet.create({
     fontWeight: '600', 
     color: THEME_COLORS.charcoalText, 
   },
+  noActivityContainer: {
+    width: 350,
+    height: 150,
+    marginLeft: 20,
+    padding: 15,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
 });
