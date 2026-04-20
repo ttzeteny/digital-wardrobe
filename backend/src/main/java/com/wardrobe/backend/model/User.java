@@ -34,6 +34,9 @@ public class User {
     @Column(length = 20)
     private String dateOfBirth;
 
+    @Column
+    private String preferredCurrency = "USD";
+
     @Column(length = 255)
     private String bio;
 

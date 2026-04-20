@@ -9,5 +9,6 @@ public class UpdateProfileRequest {
     private String fullName;
     private String phoneNumber;
     private String dateOfBirth;
+    private String preferredCurrency;
     private String bio;
 }

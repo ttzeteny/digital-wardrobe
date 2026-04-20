@@ -5,6 +5,7 @@ import { replace } from 'expo-router/build/global-state/routing';
 import { styles } from '../Styles/ConfirmScanScreen.styles';
 import { getAuthData } from '../Utils/secureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 
 export default function ConfirmScanScreen() {
     const [tagPlaceholders, setTagPlaceholder] = useState(['#summer', 'casual', 'cotton', '#favorite']);
@@ -44,6 +45,23 @@ export default function ConfirmScanScreen() {
 
             setImageUri(parsed.uri);
             setImageBase64(parsed.base64 ?? null);
+
+            const authData = await getAuthData();
+            if (authData?.token) {
+                try {
+                    const userRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/user/me`, {
+                        headers: { 'Authorization': `Bearer ${authData.token}` }
+                    });
+                    if (userRes.ok) {
+                        const userData = await userRes.json();
+                        if (userData.preferredCurrency) {
+                            setCurrency(userData.preferredCurrency);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Could not fetch user currency");
+                }
+            }
         } finally {
             setIsLoadingImage(false);
         }
@@ -270,42 +288,40 @@ export default function ConfirmScanScreen() {
                                 </View>
                             </View>
                             <View style={styles.inputRowOneTag}>
-                                <View style={styles.inputOneTag}>
+                                <View style={[styles.inputOneTag, { flex: 1 }]}>
                                     <Text style={styles.textInputLabel}>Price (Optional)</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                                     <TextInput
                                         placeholder="e.g. 5000"
                                         placeholderTextColor="#8E8E93"
-                                        style={styles.textInput}
+                                        style={[styles.textInput, { flex: 1 }]}
                                         value={price}
                                         onChangeText={setPrice}
                                         keyboardType="numeric" 
                                     />
-                                </View>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', marginTop: 15, marginLeft: 10, marginBottom: 25, gap: 10 }}>
-                                {['USD', 'EUR', 'GBP', 'HUF'].map((c) => (
-                                    <TouchableOpacity
-                                        key={c}
-                                        onPress={() => setCurrency(c)}
-                                        style={{
-                                            paddingVertical: 8,
-                                            paddingHorizontal: 16,
-                                            borderRadius: 15,
-                                            backgroundColor: currency === c ? '#967662' : '#F2F2F7',
-                                            borderWidth: 1,
-                                            borderColor: currency === c ? '#967662' : '#E5E5EA',
-                                        }}
-                                    >
-                                        <Text style={{ 
-                                            color: currency === c ? '#FFF' : '#8E8E93', 
-                                            fontWeight: 'bold', 
-                                            fontSize: 12 
-                                        }}>
-                                            {c}
+                                    
+                                    <View style={{ 
+                                        flexDirection: 'row', 
+                                        alignItems: 'center', 
+                                        marginLeft: 10, 
+                                        backgroundColor: '#F2F2F7', 
+                                        paddingHorizontal: 12, 
+                                        paddingVertical: 10, 
+                                        borderRadius: 10,
+                                        marginRight: 10, 
+                                    }}>
+                                        <Text style={{ fontWeight: 'bold', color: '#2C3E50', marginRight: 10 }}>
+                                        {currency}
                                         </Text>
-                                    </TouchableOpacity>
-                                ))}
+                                        <TouchableOpacity onPress={() => Alert.alert(
+                                        "Currency Info", 
+                                        "The currency is tied to your profile settings. You can change your preferred currency in the Profile -> Edit Profile section."
+                                        )}>
+                                        <Ionicons name="information-circle-outline" size={20} color="#967662" />
+                                        </TouchableOpacity>
+                                    </View>
+                                    </View>
+                                </View>
                             </View>
 
                         <View style={styles.tagsHeaderRow}>

@@ -37,6 +37,19 @@ export default function ItemDetailsScreen() {
       try {
         const authData = await getAuthData();
         if (!authData?.token) return;
+        if (authData?.token) {
+            try {
+                const userRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/user/me`, {
+                    headers: { 'Authorization': `Bearer ${authData.token}` }
+                });
+                if (userRes.ok) {
+                    const userData = await userRes.json();
+                    setCurrency(userData.preferredCurrency || 'USD');
+                }
+            } catch (e) {
+                console.error("Nem sikerült lekérni a felhasználó valutáját", e);
+            }
+        }
 
         const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/clothes/${id}`, {
           headers: { 'Authorization': `Bearer ${authData.token}` }
@@ -56,8 +69,13 @@ export default function ItemDetailsScreen() {
           setInitSize(data.size || '');
           setPrice(data.price ? data.price.toString() : '');
           setInitPrice(data.price ? data.price.toString() : '');
-          setCurrency(data.currency || 'HUF');
-          setInitCurrency(data.currency || 'HUF');
+          const userRes = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/user/me`, {
+              headers: { 'Authorization': `Bearer ${authData.token}` }
+          });
+          if (userRes.ok) {
+              const userData = await userRes.json();
+              setCurrency(userData.preferredCurrency || 'USD');
+          }
           setImageUrl(data.imageUrl || '');
         } else {
           Alert.alert("Error", "Could not load item details.");
@@ -228,25 +246,37 @@ export default function ItemDetailsScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Price</Text>
-              <TextInput 
-                style={[styles.textInput, comparer(price, initPrice) ? { backgroundColor: '#F8F9FA' , borderColor: '#007AFF'} : {}]} 
-                value={price} 
-                onChangeText={(text) => { setPrice(text) }} 
-                keyboardType="numeric" 
-              />
-              
-              <View style={styles.currencyRow}>
-                {['HUF', 'EUR', 'USD', 'GBP'].map((c) => (
-                  <TouchableOpacity
-                    key={c}
-                    onPress={() => setCurrency(c)}
-                    style={[styles.currencyBtn, currency === c && styles.currencyBtnActive]}
-                  >
-                    <Text style={[styles.currencyBtnText, currency === c && styles.currencyBtnTextActive]}>
-                      {c}
-                    </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  style={[styles.textInput, { flex: 1 }]}
+                  value={price}
+                  onChangeText={setPrice}
+                  keyboardType="numeric"
+                  placeholder="0.00"
+                  placeholderTextColor="#8E8E93"
+                />
+                
+                <View style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  marginLeft: 15, 
+                  backgroundColor: '#F2F2F7', 
+                  paddingHorizontal: 12, 
+                  paddingVertical: 10, 
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: '#E5E5EA'
+                }}>
+                  <Text style={{ fontWeight: 'bold', color: '#2C3E50', marginRight: 5 }}>
+                    {currency}
+                  </Text>
+                  <TouchableOpacity onPress={() => Alert.alert(
+                    "Currency Info", 
+                    "The currency is tied to your profile settings. To change it, please go to Profile -> Edit Profile."
+                  )}>
+                    <Ionicons name="information-circle-outline" size={20} color="#967662" />
                   </TouchableOpacity>
-                ))}
+                </View>
               </View>
             </View>
 

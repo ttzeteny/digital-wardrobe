@@ -17,6 +17,7 @@ export default function SettingsScreen() {
   const [email, setEmail] = useState('Loading...');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [currency, setCurrency] = useState('USD');
   const [bio, setBio] = useState('');
 
   const [day, setDay] = useState('Day');
@@ -45,6 +46,7 @@ export default function SettingsScreen() {
           setFullName(data.fullName || '');
           setPhoneNumber(data.phoneNumber || '');
           setBio(data.bio || '');
+          setCurrency(data.preferredCurrency || 'USD');
           
           if (data.dateOfBirth) {
             const parts = data.dateOfBirth.split(' ');
@@ -85,7 +87,8 @@ export default function SettingsScreen() {
           fullName: fullName,
           phoneNumber: phoneNumber,
           dateOfBirth: formattedDOB,
-          bio: bio
+          bio: bio,
+          preferredCurrency: currency
         })
       });
 
@@ -219,6 +222,33 @@ export default function SettingsScreen() {
                 keyboardType="email-address"
                 readOnly
               />
+            </View>
+
+            {/* Preferred Currency Section */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Preferred Currency</Text>
+              <View style={styles.currencyRow}>
+                {['USD', 'EUR', 'GBP', 'HUF'].map((c) => (
+                  <TouchableOpacity
+                    key={c}
+                    onPress={() => setCurrency(c)}
+                    style={[
+                      styles.currencyBtn,
+                      currency === c && styles.currencyBtnActive
+                    ]}
+                  >
+                    <Text style={[
+                      styles.currencyBtnText,
+                      currency === c && styles.currencyBtnTextActive
+                    ]}>
+                      {c}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={styles.helperText}>
+                This currency will be used for all items and statistics.
+              </Text>
             </View>
 
             <View style={styles.inputGroup}>

@@ -94,7 +94,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 6,
+    marginTop: 20,
     marginRight: 10,
   },
   tagsActions: {

@@ -151,4 +151,38 @@ export const styles = StyleSheet.create({
     fontSize: 18, 
     textAlign: 'center' 
   },
+  currencyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginTop: 8,
+  },
+  currencyBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#F2F2F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+  },
+  currencyBtnActive: {
+    backgroundColor: '#967662',
+    borderColor: '#967662',
+  },
+  currencyBtnText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#8E8E93',
+  },
+  currencyBtnTextActive: {
+    color: '#FFFFFF',
+  },
+  helperText: {
+    fontSize: 12,
+    color: '#8E8E93',
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
 });
