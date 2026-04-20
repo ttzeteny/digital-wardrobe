@@ -158,7 +158,7 @@ export default function ItemDetailsScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.replace('/(tabs)/wardrobe')}>
             <Ionicons name="chevron-back" size={28} color="#2C3E50" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Item Details</Text>

@@ -140,7 +140,7 @@ export default function WardrobeScreen() {
                   <TouchableOpacity 
                     key={item.id} 
                     style={styles.card}
-                    onPress={() => router.push(`/item-details?id=${item.id}`)}
+                    onPress={() => router.replace(`/item-details?id=${item.id}`)}
                   >
                     <View style={styles.imageWrapper}>
                       <ImageBackground 
