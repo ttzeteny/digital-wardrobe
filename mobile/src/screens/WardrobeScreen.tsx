@@ -1,11 +1,12 @@
-import { View, Text, TouchableOpacity, ImageBackground, ScrollView, ActivityIndicator, TextInput, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, ScrollView, ActivityIndicator, TextInput, Platform, UIManager, Pressable, Keyboard } from 'react-native';
 import { styles } from '../Styles/WardrobeScreen.styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getAuthData } from '../Utils/secureStore';
 import { router } from 'expo-router';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Feather from '@expo/vector-icons/Feather';
 
 interface ClothingItem {
   id: number;
@@ -18,29 +19,52 @@ interface ClothingItem {
   currency: string | null;
 }
 
-interface CategoryItemProps {
-  icon: string;
-  label: string;
-  id: number;
-  active?: boolean;
-}
+type FilterSection = 'category' | 'brand' | 'color' | 'price';
 
 export default function WardrobeScreen() {
-  const [active, setActive] = useState(1);
   const [user, setUser] = useState({ username: 'Loading...', email: '' });
 
   const [clothingItems, setClothingItems] = useState<ClothingItem[]>([]);
   const [isLoadingItems, setIsLoadingItems] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<FilterSection, boolean>>({
+    category: true,
+    brand: false,
+    color: false,
+    price: false,
+  });
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [priceOnly, setPriceOnly] = useState(false);
 
-  const CategoryItem = ({ icon, label, id, active }: CategoryItemProps) => (
-  <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]} onPress={() => setActive(id)}>
-    <Ionicons name={icon as any} size={18} color={active ? '#FFF' : '#2C3E50'} />
-    <Text style={[styles.catLabel, active && styles.catLabelActive]}>{label}</Text>
-  </TouchableOpacity>
-  );
+  const toggleSection = (section: FilterSection) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const toggleValueInList = (
+    value: string,
+    setter: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    setter(prev => prev.includes(value) ? prev.filter(item => item !== value) : [...prev, value]);
+  };
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSelectedColors([]);
+    setPriceOnly(false);
+  };
+
+  const handleToggleFilter = () => {
+    Keyboard.dismiss();
+    setIsFilterOpen(prev => !prev);
+  };
   
   useEffect(() => {
     if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -84,54 +108,74 @@ export default function WardrobeScreen() {
     fetchData();
   }, []);
 
-  const filteredItems = clothingItems.filter(item => {
+  const categoryOptions = useMemo(() => {
+    const counts = clothingItems.reduce<Record<string, number>>((acc, item) => {
+      const key = item.category?.trim() || 'Uncategorized';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
 
-    const matchesCategory = 
-      active === 1 || 
-      (active === 2 && item.category === 'Top') ||
-      (active === 3 && item.category === 'Bottom') ||
-      (active === 4 && item.category === 'Outerwear') ||
-      (active === 5 && item.category === 'One-piece') ||
-      (active === 6 && item.category === 'Shoes') ||
-      (active === 7 && item.category === 'Underwear') ||
-      (active === 8 && item.category === 'Accessory');
+    return Object.entries(counts)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([label, count]) => ({ label, count }));
+  }, [clothingItems]);
+
+  const brandOptions = useMemo(() => {
+    const counts = clothingItems.reduce<Record<string, number>>((acc, item) => {
+      const key = item.brand?.trim() || 'Unknown';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(counts)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([label, count]) => ({ label, count }));
+  }, [clothingItems]);
+
+  const colorOptions = useMemo(() => {
+    const counts = clothingItems.reduce<Record<string, number>>((acc, item) => {
+      const key = item.color?.trim() || 'Unknown';
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(counts)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([label, count]) => ({ label, count }));
+  }, [clothingItems]);
+
+  const filteredItems = clothingItems.filter(item => {
+    const normalizedCategory = item.category?.trim() || 'Uncategorized';
+    const normalizedBrand = item.brand?.trim() || 'Unknown';
+    const normalizedColor = item.color?.trim() || 'Unknown';
+
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(normalizedCategory);
+    const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(normalizedBrand);
+    const matchesColor = selectedColors.length === 0 || selectedColors.includes(normalizedColor);
+    const matchesPrice = !priceOnly || (item.price !== null && item.price > 0);
 
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesBrand && matchesColor && matchesPrice && matchesSearch;
   });
+
+  const hasActiveFilters =
+    searchQuery.trim().length > 0 ||
+    selectedCategories.length > 0 ||
+    selectedBrands.length > 0 ||
+    selectedColors.length > 0 ||
+    priceOnly;
+
+  const activeFilterCount =
+    selectedCategories.length +
+    selectedBrands.length +
+    selectedColors.length +
+    (priceOnly ? 1 : 0);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
           {/* Header */}
           <View style={styles.header}>
-            {isSearching ? (
-              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                <TextInput
-                  style={{
-                    flex: 1,
-                    backgroundColor: '#F2F2F7',
-                    borderRadius: 12,
-                    paddingHorizontal: 15,
-                    paddingVertical: 10,
-                    fontSize: 16,
-                    marginRight: 10
-                  }}
-                  placeholder="Search items by name..."
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  autoFocus
-                />
-                <TouchableOpacity onPress={() => {
-                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                  setIsSearching(false);
-                  setSearchQuery('');
-                }}>
-                  <Text style={{ color: '#967662', fontWeight: '600' }}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <>
                 <View style={styles.userInfo}>
                   <View onTouchEnd={() => router.push('/profile')}>
                     <ImageBackground
@@ -147,34 +191,138 @@ export default function WardrobeScreen() {
                   </View>
                 </View>
                 <View style={styles.headerIcons}>
-                  <TouchableOpacity 
-                    style={styles.iconCircle} 
-                    onPress={() => {
-                      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                      setIsSearching(true);
-                    }}
-                  >
-                    <EvilIcons name="search" size={24} color="black" />
+                  <TouchableOpacity>
+                    <Feather name="settings" size={23} color="#2C3E50" />
                   </TouchableOpacity>
                 </View>
-              </>
-            )}
           </View>
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-              <CategoryItem icon="grid-outline" label="ALL ITEMS" id={1} active={active == 1 ? true : false}/>
-              <CategoryItem icon="shirt-outline" label="TOPS" id={2} active={active == 2 ? true : false}/>
-              <CategoryItem icon="square" label="BOTTOMS" id={3} active={active == 3 ? true : false}/>
-              <CategoryItem icon="square" label="OUTERWEAR" id={4} active={active == 4 ? true : false}/>
-              <CategoryItem icon="square" label="ONE-PIECES" id={5} active={active == 5 ? true : false}/>
-              <CategoryItem icon="square" label="FOOTWEAR" id={6} active={active == 6 ? true : false}/>
-              <CategoryItem icon="square" label="UNDERWEAR" id={7} active={active == 7 ? true : false}/>
-              <CategoryItem icon="square" label="ACCESSORIES" id={8} active={active == 8 ? true : false}/>
-            </ScrollView>
 
+          <View style={styles.searchBar}>
+              <EvilIcons name="search" size={30} color="#2C3E50"/>
+              <TextInput 
+              placeholder='Search for an item...'
+              placeholderTextColor={'#8E8E93'}
+              style={styles.searchInput}
+              value={searchQuery} 
+              onChangeText={setSearchQuery}
+              >
+        
+              </TextInput>
+              <Pressable onPress={handleToggleFilter}>
+                <Feather name="filter" size={24} color="#2C3E50" />
+                {activeFilterCount > 0 ? (
+                  <View style={styles.filterBadge}>
+                    <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+                  </View>
+                ) : null}
+              </Pressable>
+            </View>
+            {isFilterOpen ? (
+              <View style={styles.filterPanel}>
+                <View style={styles.filterHeader}>
+                  <Text style={styles.filterTitle}>Filter</Text>
+                  <TouchableOpacity onPress={() => setIsFilterOpen(false)}>
+                    <Ionicons name="close" size={20} color="#2C3E50" />
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.filterSectionHeader} onPress={() => toggleSection('category')}>
+                  <Text style={styles.filterSectionTitle}>CATEGORY</Text>
+                  <Ionicons name={expandedSections.category ? 'chevron-up' : 'chevron-down'} size={18} color="#2C3E50" />
+                </TouchableOpacity>
+                {expandedSections.category ? (
+                  <View style={styles.chipsWrap}>
+                    {categoryOptions.map((option) => {
+                      const selected = selectedCategories.includes(option.label);
+                      return (
+                        <TouchableOpacity
+                          key={option.label}
+                          style={[styles.filterChip, selected && styles.filterChipSelected]}
+                          onPress={() => toggleValueInList(option.label, setSelectedCategories)}
+                        >
+                          <Text style={[styles.filterChipText, selected && styles.filterChipTextSelected]}>
+                            {option.label} ({option.count})
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                ) : null}
+
+                <TouchableOpacity style={styles.filterSectionHeader} onPress={() => toggleSection('brand')}>
+                  <Text style={styles.filterSectionTitle}>BRANDS</Text>
+                  <Ionicons name={expandedSections.brand ? 'chevron-up' : 'chevron-down'} size={18} color="#2C3E50" />
+                </TouchableOpacity>
+                {expandedSections.brand ? (
+                  <View style={styles.chipsWrap}>
+                    {brandOptions.map((option) => {
+                      const selected = selectedBrands.includes(option.label);
+                      return (
+                        <TouchableOpacity
+                          key={option.label}
+                          style={[styles.filterChip, selected && styles.filterChipSelected]}
+                          onPress={() => toggleValueInList(option.label, setSelectedBrands)}
+                        >
+                          <Text style={[styles.filterChipText, selected && styles.filterChipTextSelected]}>
+                            {option.label} ({option.count})
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                ) : null}
+
+                <TouchableOpacity style={styles.filterSectionHeader} onPress={() => toggleSection('color')}>
+                  <Text style={styles.filterSectionTitle}>COLOR</Text>
+                  <Ionicons name={expandedSections.color ? 'chevron-up' : 'chevron-down'} size={18} color="#2C3E50" />
+                </TouchableOpacity>
+                {expandedSections.color ? (
+                  <View style={styles.chipsWrap}>
+                    {colorOptions.map((option) => {
+                      const selected = selectedColors.includes(option.label);
+                      return (
+                        <TouchableOpacity
+                          key={option.label}
+                          style={[styles.filterChip, selected && styles.filterChipSelected]}
+                          onPress={() => toggleValueInList(option.label, setSelectedColors)}
+                        >
+                          <Text style={[styles.filterChipText, selected && styles.filterChipTextSelected]}>
+                            {option.label} ({option.count})
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                ) : null}
+
+                <TouchableOpacity style={styles.filterSectionHeader} onPress={() => toggleSection('price')}>
+                  <Text style={styles.filterSectionTitle}>PRICE</Text>
+                  <Ionicons name={expandedSections.price ? 'chevron-up' : 'chevron-down'} size={18} color="#2C3E50" />
+                </TouchableOpacity>
+                {expandedSections.price ? (
+                  <TouchableOpacity style={styles.checkboxRow} onPress={() => setPriceOnly(!priceOnly)}>
+                    <View style={[styles.checkbox, priceOnly && styles.checkboxActive]}>
+                      {priceOnly ? <Ionicons name="checkmark" size={14} color="#FFFFFF" /> : null}
+                    </View>
+                    <Text style={styles.checkboxLabel}>Show priced items only</Text>
+                  </TouchableOpacity>
+                ) : null}
+
+                <View style={styles.filterFooter}>
+                  <TouchableOpacity onPress={clearFilters}>
+                    <Text style={styles.clearAllText}>Clear all</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.showResultsButton} onPress={() => setIsFilterOpen(false)}>
+                    <Text style={styles.showResultsText}>Show results ({filteredItems.length})</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : null}
+
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
           <View style={styles.itemsContainer}>
             <Text style={styles.sectionTitle}>
-              {active === 1 ? `My Wardrobe (${clothingItems.length})` : `Filtered Items (${filteredItems.length})`}
+              {hasActiveFilters ? `Filtered Items (${filteredItems.length})` : `My Wardrobe (${clothingItems.length})`}
             </Text>
 
             {isLoadingItems ? (
