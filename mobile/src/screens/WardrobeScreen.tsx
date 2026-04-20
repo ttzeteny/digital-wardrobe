@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ImageBackground, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, ScrollView, ActivityIndicator, TextInput, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { styles } from '../Styles/WardrobeScreen.styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
@@ -32,6 +32,9 @@ export default function WardrobeScreen() {
   const [clothingItems, setClothingItems] = useState<ClothingItem[]>([]);
   const [isLoadingItems, setIsLoadingItems] = useState(true);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
   const CategoryItem = ({ icon, label, id, active }: CategoryItemProps) => (
   <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]} onPress={() => setActive(id)}>
     <Ionicons name={icon as any} size={18} color={active ? '#FFF' : '#2C3E50'} />
@@ -39,6 +42,12 @@ export default function WardrobeScreen() {
   </TouchableOpacity>
   );
   
+  useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
   useEffect(() => {
 
     const fetchData = async () => {
@@ -76,38 +85,80 @@ export default function WardrobeScreen() {
   }, []);
 
   const filteredItems = clothingItems.filter(item => {
-    if (active === 1) return true;
-    if (active === 2) return item.category === 'Top';
-    if (active === 3) return item.category === 'Bottom';
-    if (active === 4) return item.category === 'Outerwear';
-    if (active === 5) return item.category === 'One-piece';
-    if (active === 6) return item.category === 'Footwear';
-    if (active === 7) return item.category === 'Underwear';
-    if (active === 8) return item.category === 'Accessory';
-    return true;
+
+    const matchesCategory = 
+      active === 1 || 
+      (active === 2 && item.category === 'Top') ||
+      (active === 3 && item.category === 'Bottom') ||
+      (active === 4 && item.category === 'Outerwear') ||
+      (active === 5 && item.category === 'One-piece') ||
+      (active === 6 && item.category === 'Shoes') ||
+      (active === 7 && item.category === 'Underwear') ||
+      (active === 8 && item.category === 'Accessory');
+
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
   });
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
           {/* Header */}
           <View style={styles.header}>
-            <View style={styles.userInfo}>
-              <View onTouchEnd={() => router.push('/profile')}>
-                <ImageBackground
-                  source={require('../Images/avatar.png')}
-                  style={styles.avatarPlaceholder}
-                  imageStyle={{ borderRadius: 22.5 }}
-                  resizeMode="cover"
-              />
+            {isSearching ? (
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#F2F2F7',
+                    borderRadius: 12,
+                    paddingHorizontal: 15,
+                    paddingVertical: 10,
+                    fontSize: 16,
+                    marginRight: 10
+                  }}
+                  placeholder="Search items by name..."
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  autoFocus
+                />
+                <TouchableOpacity onPress={() => {
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                  setIsSearching(false);
+                  setSearchQuery('');
+                }}>
+                  <Text style={{ color: '#967662', fontWeight: '600' }}>Cancel</Text>
+                </TouchableOpacity>
               </View>
-              <View>
-                <Text style={styles.greetingText}>Welcome back,</Text>
-                <Text style={styles.userName}>{user.username}</Text>
-              </View>
-            </View>
-            <View style={styles.headerIcons}>
-              <TouchableOpacity style={styles.iconCircle}><EvilIcons name="search" size={24} color="black" /></TouchableOpacity>
-            </View>
+            ) : (
+              <>
+                <View style={styles.userInfo}>
+                  <View onTouchEnd={() => router.push('/profile')}>
+                    <ImageBackground
+                      source={require('../Images/avatar.png')}
+                      style={styles.avatarPlaceholder}
+                      imageStyle={{ borderRadius: 22.5 }}
+                      resizeMode="cover"
+                    />
+                  </View>
+                  <View>
+                    <Text style={styles.greetingText}>Welcome back,</Text>
+                    <Text style={styles.userName}>{user.username}</Text>
+                  </View>
+                </View>
+                <View style={styles.headerIcons}>
+                  <TouchableOpacity 
+                    style={styles.iconCircle} 
+                    onPress={() => {
+                      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                      setIsSearching(true);
+                    }}
+                  >
+                    <EvilIcons name="search" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
