@@ -42,7 +42,7 @@ export default function LoginScreen() {
         }
 
         const normalizedToken = String(data.token).trim().replace(/^"|"$/g, '');
-        const saved = await saveAuthData(normalizedToken, data.username);
+        const saved = await saveAuthData(normalizedToken, data.username, email);
         if (!saved) {
           Alert.alert("Login Failed", "Could not persist session token on this device.");
           return;

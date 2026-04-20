@@ -95,7 +95,7 @@ export default function DigitalWardrobeDashboard() {
       if (data) {
         setUser({
           username: data.username ?? 'Unknown',
-          email: 'example@example.com',
+          email: data.email ?? 'example@example.com',
         });
       }
     };

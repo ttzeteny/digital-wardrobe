@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEY = 'userToken';
 const USERNAME_KEY = 'userName';
+const EMAIL_KEY = 'userEmail';
 
 const setItem = async (key, value) => {
     const safeValue = String(value ?? '');
@@ -40,11 +41,12 @@ const deleteItem = async (key) => {
     await AsyncStorage.removeItem(key);
 };
 
-export const saveAuthData = async (token, username) => {   
+export const saveAuthData = async (token, username, email) => {   
     try {
         const normalizedToken = String(token ?? '').trim().replace(/^"|"$/g, '');
         await setItem(TOKEN_KEY, normalizedToken);
         await setItem(USERNAME_KEY, username);
+        await setItem(EMAIL_KEY, email);
         return true;
     } catch (error) {
         console.error('Error saving auth data:', error);
@@ -56,9 +58,10 @@ export const getAuthData = async () => {
     try {
         const token = await getItem(TOKEN_KEY);
         const username = await getItem(USERNAME_KEY);
+        const email = await getItem(EMAIL_KEY);
 
         if (token !== null) {
-            return { token, username };
+            return { token, username, email };
         }
         return null;
     } catch (error) {
@@ -71,6 +74,7 @@ export const clearAuthData = async () => {
     try {
         await deleteItem(TOKEN_KEY);
         await deleteItem(USERNAME_KEY);
+        await deleteItem(EMAIL_KEY);
     } catch (error) {
         console.error('Error clearing auth data:', error);
     }

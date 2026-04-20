@@ -18,7 +18,7 @@ export default function ProfileScreen() {
       if (data) {
         setUser({
           username: data.username ?? 'Unknown',
-          email: 'example@example.com', // TODO: Display email correctly
+          email: data.email ?? 'example@example.com',
         });
       }
     };
