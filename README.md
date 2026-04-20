@@ -15,9 +15,9 @@ Digital Wardrobe is a full-stack mobile application designed to help users digit
 ## Screenshots from the app
 
 <p align="center">
-  <img src="./screenshots/home.png" width="30%" />
+  <img src="./screenshots/Digital_wardrobe_Screenshot_1.PNG" width="30%" />
   &nbsp; &nbsp; &nbsp; &nbsp;
-  <img src="./screenshots/wardrobe.png" width="30%" />
+  <img src="./screenshots/Digital_wardrobe_Screenshot_2.PNG" width="30%" />
 </p>
 
 ## Tech Stack
