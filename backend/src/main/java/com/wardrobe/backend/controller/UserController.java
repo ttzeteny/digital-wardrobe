@@ -30,9 +30,11 @@ public class UserController {
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setUsername(request.getUsername());
-        user.setBio(request.getBio());
-        user.setEmail(request.getEmail());
+        if (request.getUsername() != null) user.setUsername(request.getUsername());
+        if (request.getFullName() != null) user.setFullName(request.getFullName());
+        if (request.getPhoneNumber() != null) user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getDateOfBirth() != null) user.setDateOfBirth(request.getDateOfBirth());
+        if (request.getBio() != null) user.setBio(request.getBio());
 
         User updatedUser = userRepository.save(user);
         return ResponseEntity.ok(updatedUser);

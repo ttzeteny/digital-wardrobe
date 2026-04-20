@@ -1,17 +1,105 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Pressable, Modal, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Pressable, Modal, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../Styles/SettingsScreen.styles';
 import { router } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
+import { getAuthData } from '../Utils/secureStore';
 
 export default function SettingsScreen() {
 
-  const handleSave = () => {
-    //TODO: Implement actual save logic here (e.g., API call to update user profile)
-    router.push('/profile');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const [username, setUsername] = useState('Loading...');
+  const [email, setEmail] = useState('Loading...');
+  const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [bio, setBio] = useState('');
+
+  const [day, setDay] = useState('Day');
+  const [month, setMonth] = useState('Month');
+  const [year, setYear] = useState('Year');
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const years = Array.from({ length: 127 }, (_, i) => (2026 - i).toString());
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const authData = await getAuthData();
+        if (!authData?.token) return;
+
+        setUsername(authData.username || '');
+        setEmail(authData.email || '');
+
+        const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/user/me`, {
+          headers: { 'Authorization': `Bearer ${authData.token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setFullName(data.fullName || '');
+          setPhoneNumber(data.phoneNumber || '');
+          setBio(data.bio || '');
+          
+          if (data.dateOfBirth) {
+            const parts = data.dateOfBirth.split(' ');
+            if (parts.length === 3) {
+              setYear(parts[0]);
+              setMonth(parts[1]);
+              setDay(parts[2]);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    let formattedDOB = null;
+    if (year !== 'Year' && month !== 'Month' && day !== 'Day') {
+      formattedDOB = `${year} ${month} ${day}`;
+    }
+
+    try {
+      const authData = await getAuthData();
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/user/me`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData?.token}`
+        },
+        body: JSON.stringify({
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          dateOfBirth: formattedDOB,
+          bio: bio
+        })
+      });
+
+      if (response.ok) {
+        Alert.alert("Success", "Profile updated successfully!");
+        router.replace('/profile');
+      } else {
+        Alert.alert("Error", "Failed to update profile.");
+      }
+    } catch (error) {
+      Alert.alert("Network Error", "Could not connect to the server.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const pickProfileImage = async () => {
@@ -28,15 +116,6 @@ export default function SettingsScreen() {
       }
   };
 
-  /* Date of birth */
-
-  const [day, setDay] = useState('Day');
-  const [month, setMonth] = useState('Month');
-  const [year, setYear] = useState('Year');
-
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const years = Array.from({ length: 127 }, (_, i) => (2026 - i).toString());
 
   const CustomDropdown = ({options, selectedValue, onSelect} : {options: string[], selectedValue: string, onSelect: Function}) => {
     const [visible, setVisible] = useState(false);
@@ -69,6 +148,14 @@ export default function SettingsScreen() {
       );
   };
 
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#967662" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView 
@@ -81,11 +168,14 @@ export default function SettingsScreen() {
             <MaterialIcons name="arrow-back-ios-new" size={24} color="#2C3E50"/>
           </Pressable>
           <Text style={styles.editProfileText}>Edit Profile</Text>
-          <TouchableOpacity onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
+          <TouchableOpacity onPress={handleSave} disabled={isSaving}>
+            {isSaving ? (
+              <ActivityIndicator size="small" color="#967662" />
+            ) : (
+              <Text style={styles.saveButtonText}>Save</Text>
+            )}
           </TouchableOpacity>
         </View>  
-        {/* ScrollView */}
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.avatarContainer}>
             <View style={styles.imageWrapper}>
@@ -105,7 +195,8 @@ export default function SettingsScreen() {
               <Text style={styles.label}>Name</Text>
               <TextInput 
                 style={styles.input}
-                //onChangeText=
+                value={fullName}
+                onChangeText={setFullName}
                 placeholderTextColor="#8E8E93"
                 placeholder="Enter your name"
               />
@@ -114,10 +205,8 @@ export default function SettingsScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Username</Text>
               <TextInput 
-                style={styles.input}
-                value={"Username"}
-                //onChangeText=
-                placeholderTextColor="#8E8E93"
+                style={[styles.input, { backgroundColor: '#F2F2F7', color: '#8E8E93' }]}
+                value={username}
                 readOnly
               />
             </View>
@@ -125,8 +214,8 @@ export default function SettingsScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
               <TextInput 
-                style={styles.input}
-                value={"example@example.com"}
+                style={[styles.input, { backgroundColor: '#F2F2F7', color: '#8E8E93' }]}
+                value={email}
                 keyboardType="email-address"
                 readOnly
               />
@@ -136,7 +225,9 @@ export default function SettingsScreen() {
               <Text style={styles.label}>Phone Number</Text>
               <TextInput 
                 style={styles.input}
-                //onChangeText=
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
                 placeholderTextColor="#8E8E93"
                 placeholder="Enter your phone number"
               />
@@ -157,7 +248,8 @@ export default function SettingsScreen() {
               <Text style={styles.label}>Wardrobe Bio</Text>
               <TextInput 
                 style={[styles.input, styles.textArea]}
-                //onChangeText=
+                value={bio}
+                onChangeText={setBio}
                 multiline
                 numberOfLines={4}
                 placeholderTextColor="#8E8E93"

@@ -25,7 +25,16 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(length = 500)
+    @Column
+    private String fullName;
+
+    @Column
+    private String phoneNumber;
+
+    @Column(length = 20)
+    private String dateOfBirth;
+
+    @Column(length = 255)
     private String bio;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
