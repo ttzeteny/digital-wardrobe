@@ -12,6 +12,14 @@ Digital Wardrobe is a full-stack mobile application designed to help users digit
 - **Profile & Settings**: Manage user details including Full Name, Bio, Date of Birth, and Phone Number.
 - **Modern UI**: Features a Floating Action Button (FAB) for quick scanning and a clean, responsive layout.
 
+## Screenshots from the app
+
+<p align="center">
+  <img src="./screenshots/home.png" width="30%" />
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <img src="./screenshots/wardrobe.png" width="30%" />
+</p>
+
 ## Tech Stack
 
 ### Backend
