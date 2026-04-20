@@ -16,6 +16,7 @@ interface CategoryItemProps {
   label: string;
   id: number;
   active?: boolean;
+  onPress?: () => void;
 }
 
 interface ActionCardProps {
@@ -26,6 +27,7 @@ interface ActionCardProps {
   color: string;
   icon: string;
   iconBackground: string;
+  onPress?: () => void;
 }
 
 interface ActivityCardProps {
@@ -80,8 +82,8 @@ export default function DigitalWardrobeDashboard() {
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
   const [recentError, setRecentError] = useState<string | null>(null);
 
-  const CategoryItem = ({ icon, label, id, active }: CategoryItemProps) => (
-  <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]} onPress={() => setActive(id)}>
+  const CategoryItem = ({ icon, label, id, active, onPress }: CategoryItemProps) => (
+  <TouchableOpacity style={[styles.catItem, active && styles.catItemActive]} onPress={() => { setActive(id); if (onPress) onPress(); }}>
     <IconSymbol name={icon as any} size={18} color={active ? '#FFF' : '#2C3E50'} />
     <Text style={[styles.catLabel, active && styles.catLabelActive]}>{label}</Text>
   </TouchableOpacity>
@@ -226,8 +228,16 @@ export default function DigitalWardrobeDashboard() {
           </View>
         </View>
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconCircle}><IconSymbol name="hanger" size={20} color="#000000" /></TouchableOpacity>
-          <TouchableOpacity style={styles.iconCircle}><IconSymbol name="calendar" size={20} color="#000000" /></TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.iconCircle} 
+            onPress={() => router.replace('/(tabs)/wardrobe')}
+          >
+            <IconSymbol name="hanger" size={20} color="#000000" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.iconCircle}>
+            <IconSymbol name="calendar" size={20} color="#000000" />
+          </TouchableOpacity>
         </View>
       </View>
       
@@ -256,15 +266,17 @@ export default function DigitalWardrobeDashboard() {
           <Text style={styles.sectionTitle}>Manage</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-          <CategoryItem icon="camera" label="DIGITIZE" id={1} active={active == 1 ? true : false}/>
-          <CategoryItem icon="square.grid.2x2" label="ORGANIZE" id={2} active={active == 2 ? true : false} />
+          <CategoryItem icon="camera" label="DIGITIZE" id={1} active={active == 1 ? true : false} onPress={() => router.replace('/scan')}/>
+          <CategoryItem icon="square.grid.2x2" label="ORGANIZE" id={2} active={active == 2 ? true : false} onPress={() => router.replace('/(tabs)/wardrobe')}/>
           <CategoryItem icon="calendar" label="PLAN" id={3} active={active == 3 ? true : false}/>
           <CategoryItem icon="sparkles" label="STYLIST" id={4} active={active == 4 ? true : false}/>
         </ScrollView>
         {/* Quick Actions */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => router.replace('/(tabs)/menu')}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.quickActionsRow}>
@@ -276,6 +288,7 @@ export default function DigitalWardrobeDashboard() {
               color="#D2B496" 
               icon="hanger"
               iconBackground="#E4D3C6"
+              onPress={() => replace('/(tabs)/wardrobe')}
             />
             <QuickActionCard 
               line1="Daily" 
@@ -318,8 +331,8 @@ export default function DigitalWardrobeDashboard() {
   );
 }
 
-const QuickActionCard = ({ line1, line2, sub1, sub2, color, icon , iconBackground}: ActionCardProps) => (
-  <TouchableOpacity style={[styles.actionCard, { backgroundColor: color }]}>
+const QuickActionCard = ({ line1, line2, sub1, sub2, color, icon , iconBackground, onPress }: ActionCardProps) => (
+  <TouchableOpacity style={[styles.actionCard, { backgroundColor: color }]} onPress={onPress}>
     <View style={styles.actionContent}>
       <View style={[styles.actionIconContainer, { backgroundColor: iconBackground }]}>
         <IconSymbol name={icon as any} size={24} color="#2C3E50" />
